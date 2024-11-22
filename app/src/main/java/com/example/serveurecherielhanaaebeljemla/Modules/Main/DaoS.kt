@@ -13,7 +13,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
-import com.example.serveurecherielhanaaebeljemla.Models.DevicesTypeManager
+import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
 @Dao
 interface ArticlesBasesStatsModelDao {

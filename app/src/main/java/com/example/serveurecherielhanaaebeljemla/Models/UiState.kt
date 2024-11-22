@@ -6,11 +6,13 @@ import a_RoomDB.ClientsModel
 import a_RoomDB.ColorsArticlesTabelle
 import a_RoomDB.SoldArticlesTabelle
 import a_RoomDB.SuppliersTabelle
+import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
+import com.example.serveurecherielhanaaebeljemla.Models.Res.ProductDisplayController
 
-// 1. First, update the UiState class to properly use devicesTypeManager
 data class UiState(
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
     val devicesTypeManager: List<DevicesTypeManager> = emptyList(),
+
     val articlesBasesStatTables: List<ArticlesBasesStatsTable> = emptyList(),
     val categories: List<CategoriesTabelle> = emptyList(),
     val colorsArticlesTabelleModel: List<ColorsArticlesTabelle> = emptyList(),

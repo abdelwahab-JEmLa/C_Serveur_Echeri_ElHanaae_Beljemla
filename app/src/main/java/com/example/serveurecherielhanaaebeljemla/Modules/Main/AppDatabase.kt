@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
-import com.example.serveurecherielhanaaebeljemla.Models.DevicesTypeManager
+import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 import java.util.Date
 
 @Database(

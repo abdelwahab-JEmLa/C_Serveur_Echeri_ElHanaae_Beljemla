@@ -1,4 +1,4 @@
-package com.example.serveurecherielhanaaebeljemla.Models
+package com.example.serveurecherielhanaaebeljemla.Models.Res
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -33,8 +33,8 @@ fun MainScreen(
     appViewModels: AppViewModels,
     modifier: Modifier = Modifier
 ) {
-    val headViewModel = appViewModels.headViewModel
-    val uiState by headViewModel.uiState.collectAsState()
+    val initViewModel = appViewModels.initViewModel
+    val uiState by initViewModel.uiState.collectAsState()
     val productDisplayController = uiState.productDisplayController
 
 

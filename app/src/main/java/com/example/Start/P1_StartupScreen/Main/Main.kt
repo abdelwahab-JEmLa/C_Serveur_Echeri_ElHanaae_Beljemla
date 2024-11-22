@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
 import com.example.serveurecherielhanaaebeljemla.Models.UiState
-import com.example.serveurecherielhanaaebeljemla.Modules.ViewModel.HeadViewModel
+import com.example.serveurecherielhanaaebeljemla.Modules.ViewModel.InitViewModel
 
 @Composable
 fun FragmentStartUpScreen(
-    viewModel: HeadViewModel,
+    viewModel: InitViewModel,
     isFabVisible: Boolean,
 ) {
       val uiState by viewModel.uiState.collectAsState()

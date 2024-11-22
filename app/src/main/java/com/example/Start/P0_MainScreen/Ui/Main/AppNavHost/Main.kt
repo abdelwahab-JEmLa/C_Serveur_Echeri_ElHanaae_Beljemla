@@ -2,16 +2,11 @@ package P0_MainScreen.Ui.Main.AppNavHost
 
 import P0_MainScreen.Ui.Objects.LoadingOverlay
 import P1_StartupScreen.Main.FragmentStartUpScreen
-import a_RoomDB.ArticlesBasesStatsTable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,7 +21,7 @@ fun AppNavHost(
     isFabVisible: Boolean,
 
 ) {
-    val uiState by appViewModels.headViewModel.uiState.collectAsState()
+    val uiState by appViewModels.initViewModel.uiState.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(
@@ -38,7 +33,7 @@ fun AppNavHost(
                 Box(modifier = Modifier.fillMaxSize()) {
                     FragmentStartUpScreen(
 
-                        viewModel = appViewModels.headViewModel,
+                        viewModel = appViewModels.initViewModel,
 
                         isFabVisible = isFabVisible,
                        )

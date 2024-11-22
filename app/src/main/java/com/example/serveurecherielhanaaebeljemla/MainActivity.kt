@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.AppDatabase
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.PermissionHandler
-import com.example.serveurecherielhanaaebeljemla.Modules.ViewModel.HeadViewModel
+import com.example.serveurecherielhanaaebeljemla.Modules.ViewModel.InitViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
@@ -51,7 +51,7 @@ class MyApplication : Application() {
 }
 
 data class AppViewModels(
-    val headViewModel: HeadViewModel,
+    val initViewModel: InitViewModel,
 )
 
 // ViewModelFactory.kt
@@ -62,8 +62,8 @@ class ViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(HeadViewModel::class.java) ->
-                HeadViewModel(
+            modelClass.isAssignableFrom(InitViewModel::class.java) ->
+                InitViewModel(
                     context.applicationContext,
                     database,
                 ) as T
@@ -89,11 +89,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val headViewModel: HeadViewModel by viewModels { viewModelFactory }
+    private val initViewModel: InitViewModel by viewModels { viewModelFactory }
 
     private val appViewModels by lazy {
         AppViewModels(
-            headViewModel = headViewModel,
+            initViewModel = initViewModel,
         )
     }
 

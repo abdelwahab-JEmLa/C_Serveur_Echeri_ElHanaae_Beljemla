@@ -1,4 +1,4 @@
-package com.example.serveurecherielhanaaebeljemla.Models
+package com.example.serveurecherielhanaaebeljemla.Models.Res
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName

@@ -10,7 +10,7 @@ import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
-import com.example.serveurecherielhanaaebeljemla.Models.ProductDisplayController
+import com.example.serveurecherielhanaaebeljemla.Models.Res.ProductDisplayController
 import com.example.serveurecherielhanaaebeljemla.Models.UiState
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.AppDatabase
 import com.google.firebase.database.BuildConfig
@@ -28,7 +28,7 @@ import java.util.Date
 import java.util.Locale
 
 
-open class HeadViewModel(
+open class InitViewModel(
     context: Context,
     private val database: AppDatabase,
 ) : ViewModel() {
@@ -45,7 +45,12 @@ open class HeadViewModel(
 
   //  ***
     private val firebaseDatabase = FirebaseDatabase.getInstance()
-    private val refAppSettingsSaverModel = firebaseDatabase.getReference("A_AppSettingsSaverModel")
+    private val refAppSettingsSaverModel = firebaseDatabase.getReference("A_AppSettingsSaverModel") //-->
+    //Hi Claud,what i went from u to do is to
+    //Find All TODOs and Fix Them 
+
+    //TODO:
+    // groupe ces ref don une list 
     private val refDBJetPackExport = firebaseDatabase.getReference("e_DBJetPackExport")
     private val refCategorieModel = firebaseDatabase.getReference("H_CategorieTabele")
     private val refColorsArticles = firebaseDatabase.getReference("H_ColorsArticles")
