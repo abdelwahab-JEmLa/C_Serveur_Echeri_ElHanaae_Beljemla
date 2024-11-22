@@ -22,29 +22,11 @@ import com.example.serveurecherielhanaaebeljemla.AppViewModels
 fun AppNavHost(
     appViewModels: AppViewModels,
     navController: NavHostController,
-    onToggleNavBar: () -> Unit,
     modifier: Modifier = Modifier,
     isFabVisible: Boolean,
-    onClickDonne: () -> Unit,
-    onClickToDisplayeConexionWifi: () -> Unit,
-    onToggleLockHost: () -> Unit
+
 ) {
     val uiState by appViewModels.headViewModel.uiState.collectAsState()
-
-    // Get current client from settings
-    val currentClientId = uiState.appSettingsSaverModel
-        .find { it.name == "clientBuyerNowId" }?.valueLong ?: 0
-    val currentClient = uiState.clientsModel.find { it.idClientsSu == currentClientId }
-
-    // Existing state management
-    var opnerSaleWindows by rememberSaveable { mutableStateOf(false) }
-    var showClientSelection by rememberSaveable { mutableStateOf(false) }
-    var showClientSelectionWithoutCondition by rememberSaveable { mutableStateOf(false) }
-    var relatedArticleBaseStats by rememberSaveable { mutableStateOf<ArticlesBasesStatsTable?>(null) }
-    var pendingIndexColor by rememberSaveable { mutableIntStateOf(0) }
-    val reloadTrigger by rememberSaveable { mutableIntStateOf(0) }
-    var scrollTiger by rememberSaveable { mutableIntStateOf(0) }
-    var lockExpandedPrices by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = modifier.fillMaxSize()) {
         NavHost(

@@ -4,8 +4,6 @@ import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -67,13 +65,8 @@ fun MainScreen(
                     AppNavHost(
                         appViewModels = appViewModels,
                         navController = navController,
-                        onToggleNavBar = { isNavBarVisible = !isNavBarVisible },
                         modifier = Modifier.fillMaxSize(),
-                        isFabVisible = isFabVisible,
-                        onClickDonne = { isFabVisible = false },
-                        onClickToDisplayeConexionWifi = {
-                            isDisplayedConnexionWifiVisible = !isDisplayedConnexionWifiVisible
-                        }, onToggleLockHost = {lockHost=!lockHost}
+                        isFabVisible = isFabVisible
                     )
 
                     // Disable interactions when not host phone
