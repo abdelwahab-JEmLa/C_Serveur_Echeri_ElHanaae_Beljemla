@@ -58,11 +58,6 @@ fun ClientBonsByDayScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Client Bons By Day",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
 
             LazyColumn {
                 items(state.clientBonsByDay) { bon ->
