@@ -1,7 +1,6 @@
 package com.example.serveurecherielhanaaebeljemla
 
 import android.app.Application
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import com.example.Start.P0_MainScreen.Main.MainScreen
-import com.example.Start.P2_ClientBonsByDay.clientbonsbyday.ClientBonsByDayViewModel
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayViewModel
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.AppDatabase
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.DatabaseRepository
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.PermissionHandler

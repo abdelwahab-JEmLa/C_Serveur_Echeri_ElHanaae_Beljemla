@@ -46,7 +46,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun FloatingActionButtonGroup(
-    modifier: Modifier, ) {
+    modifier: Modifier,
+    ) {
     var showLabels by remember { mutableStateOf(true) }
     var isExpanded by remember { mutableStateOf(false) }
     var clearDataClickCount by remember { mutableIntStateOf(0) }

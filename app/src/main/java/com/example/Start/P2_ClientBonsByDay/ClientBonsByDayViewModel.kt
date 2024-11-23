@@ -1,4 +1,4 @@
-package com.example.Start.P2_ClientBonsByDay.clientbonsbyday
+package com.example.Start.P2_ClientBonsByDay
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

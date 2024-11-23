@@ -1,5 +1,11 @@
-package com.example.Start.P2_ClientBonsByDay.clientbonsbyday
+package com.example.Start.P2_ClientBonsByDay
 
+import P1_StartupScreen.Main.FloatingActionButtonGroup.FloatingActionButtonGroup
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -78,7 +85,7 @@ fun ClientBonsByDayScreen(
         ) {
             Icon(Icons.Default.Add, contentDescription = "Add Bon")
         }
-
+        AnimatedFabGroup( )
         if (showDialog) {
             AddBonDialog(
                 onDismiss = { showDialog = false },
@@ -90,7 +97,25 @@ fun ClientBonsByDayScreen(
         }
     }
 }
-
+@Composable
+private fun AnimatedFabGroup(
+) {
+    Box(
+        modifier = Modifier
+            .padding(bottom = 16.dp, end = 16.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        AnimatedVisibility(
+            visible = true ,
+            enter = fadeIn() + slideInVertically { it / 2 },
+            exit = fadeOut() + slideOutVertically { it / 2 }
+        ) {
+            FloatingActionButtonGroup(
+                modifier = Modifier.zIndex(1f),
+            )
+        }
+    }
+}
 @Composable
 private fun ClientBonCard(
     bon: ClientBonsByDay,

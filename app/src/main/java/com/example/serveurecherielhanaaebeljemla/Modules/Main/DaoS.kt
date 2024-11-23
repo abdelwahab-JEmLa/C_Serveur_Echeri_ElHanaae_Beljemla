@@ -15,8 +15,7 @@ import androidx.room.Update
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
-import androidx.room.*
-import com.example.Start.P2_ClientBonsByDay.clientbonsbyday.ClientBonsByDay
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDay
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 

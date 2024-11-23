@@ -1,11 +1,16 @@
-package com.example.Start.P2_ClientBonsByDay.clientbonsbyday
-
+package com.example.Start.P2_ClientBonsByDay
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.serialization.Serializable
 
+/**
+ * Object used for a type safe destination to a Home screen
+ */
+@Serializable
+data class ClientBonsByDayDestination(val route: String = "clientBonsByDay") : java.io.Serializable
 
 // Then update the Route to use this directly:
 @Composable

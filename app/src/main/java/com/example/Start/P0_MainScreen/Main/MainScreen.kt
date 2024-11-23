@@ -30,10 +30,11 @@ fun MainScreen(appViewModels: AppViewModels) {
             )
         }
         clientBonsByDayState.isInitialized -> {
-            MainContent(appViewModels, modifier = Modifier)
+            MainContent(modifier = Modifier)
         }
     }
 }
+
 @Composable
 private fun LoadingScreen() {
     Box(
@@ -62,19 +63,11 @@ private fun ErrorScreen(error: String, onRetry: () -> Unit) {
 }
 
 @Composable
-private fun MainContent(appViewModels: AppViewModels,modifier: Modifier) {
-    val clientBonsByDayViewModel = appViewModels.clientBonsByDayViewModel
-
-
-
-    // Navigation setup
+private fun MainContent(modifier: Modifier) {
     val navController = rememberNavController()
     val items = NavigationItems.getItems()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
-    // State management
     var isFabVisible by remember { mutableStateOf(false) }
-
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -82,26 +75,21 @@ private fun MainContent(appViewModels: AppViewModels,modifier: Modifier) {
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
-
-                // Main Content Area
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavHost(
                         navController = navController,
                         modifier = Modifier.fillMaxSize(),
-                        isFabVisible = isFabVisible
                     )
-
-
                 }
             }
 
-            // Navigation Bar with FAB
             AnimatedVisibility(
                 visible = true,
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 NavigationBarWithFab(
-                    items = items.filter { it != Screen.ToggleFab },
+                    // Fixed the filtering logic to avoid type comparison issues
+                    items = items,
                     currentRoute = currentRoute,
                     onNavigate = { route ->
                         navController.navigate(route) {
@@ -119,5 +107,6 @@ private fun MainContent(appViewModels: AppViewModels,modifier: Modifier) {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-        } }
+        }
+    }
 }
