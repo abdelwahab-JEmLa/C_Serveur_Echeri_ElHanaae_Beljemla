@@ -1,4 +1,5 @@
 package P0_MainScreen.Ui.Objects
+
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -28,7 +29,6 @@ fun LoadingOverlay(
     progress: Float,
     modifier: Modifier = Modifier
 ) {
-    // État pour l'animation de clignotement
     val infiniteTransition = rememberInfiniteTransition(label = "loading")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.2f,
