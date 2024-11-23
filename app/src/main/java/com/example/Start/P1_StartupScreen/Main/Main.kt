@@ -19,17 +19,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
 import com.example.serveurecherielhanaaebeljemla.Models.UiState
-import com.example.serveurecherielhanaaebeljemla.Modules.ViewModel.InitViewModel
 
 @Composable
 fun FragmentStartUpScreen(
-    viewModel: InitViewModel,
     isFabVisible: Boolean,
 ) {
-      val uiState by viewModel.uiState.collectAsState()
 
     MainUi(
-        uiState = uiState,
         isFabVisible = isFabVisible,
 
     )
@@ -37,25 +33,15 @@ fun FragmentStartUpScreen(
 
 @Composable
 fun MainUi(
-    uiState: UiState,
     isFabVisible: Boolean,
 
     ) {
 
-
     Box(modifier = Modifier.fillMaxSize()) {
-
 
         AnimatedFabGroup(
             isFabVisible = isFabVisible,
                   )
-
-        if (uiState.isLoading) {
-            LoadingOverlay(
-                progress = uiState.loadingProgress,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
     }
 }
 

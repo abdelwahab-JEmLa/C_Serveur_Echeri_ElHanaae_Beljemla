@@ -15,6 +15,34 @@ import androidx.room.Update
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
+import androidx.room.*
+import com.example.Start.P2_ClientBonsByDay.clientbonsbyday.ClientBonsByDay
+import kotlinx.coroutines.flow.Flow
+import java.util.Date
+
+@Dao
+interface ClientBonsByDayDao {
+    @Query("SELECT * FROM client_bons_by_day ORDER BY date DESC")
+    fun getAllBonsFlow(): Flow<List<ClientBonsByDay>>
+
+    @Query("SELECT * FROM client_bons_by_day WHERE date = :date")
+    suspend fun getBonsByDate(date: Date): List<ClientBonsByDay>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertBon(bon: ClientBonsByDay)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertBons(bons: List<ClientBonsByDay>)
+
+    @Update
+    suspend fun updateBon(bon: ClientBonsByDay)
+
+    @Delete
+    suspend fun deleteBon(bon: ClientBonsByDay)
+
+    @Query("DELETE FROM client_bons_by_day")
+    suspend fun deleteAllBons()
+}
 @Dao
 interface ArticlesBasesStatsModelDao {
     @Query("SELECT * FROM ArticlesBasesStatsTable ORDER BY idCategorie")
@@ -150,4 +178,5 @@ interface DevicesTypeManagerDao{
     suspend fun deleteAll()
 
 }
+
 

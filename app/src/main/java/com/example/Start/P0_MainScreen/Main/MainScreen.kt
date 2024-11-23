@@ -5,22 +5,9 @@ import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
 import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
 import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,13 +16,54 @@ import androidx.navigation.compose.rememberNavController
 import com.example.serveurecherielhanaaebeljemla.AppViewModels
 
 @Composable
-fun MainScreen(
-    appViewModels: AppViewModels,
-    modifier: Modifier = Modifier
-) {
-    val initViewModel = appViewModels.initViewModel
-    val uiState by initViewModel.uiState.collectAsState()
-    val productDisplayController = uiState.productDisplayController
+fun MainScreen(appViewModels: AppViewModels) {
+    val clientBonsByDayState by appViewModels.clientBonsByDayViewModel.state.collectAsState()
+
+    when {
+        clientBonsByDayState.isLoading -> {
+            LoadingScreen()
+        }
+        clientBonsByDayState.error != null -> {
+            ErrorScreen(
+                error = clientBonsByDayState.error!!,
+                onRetry = { appViewModels.clientBonsByDayViewModel.retryInitialization() }
+            )
+        }
+        clientBonsByDayState.isInitialized -> {
+            MainContent(appViewModels, modifier = Modifier)
+        }
+    }
+}
+@Composable
+private fun LoadingScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ErrorScreen(error: String, onRetry: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = error)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onRetry) {
+            Text("Retry")
+        }
+    }
+}
+
+@Composable
+private fun MainContent(appViewModels: AppViewModels,modifier: Modifier) {
+    val clientBonsByDayViewModel = appViewModels.clientBonsByDayViewModel
 
 
 
@@ -45,12 +73,7 @@ fun MainScreen(
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     // State management
-    var isNavBarVisible by remember { mutableStateOf(true) }
     var isFabVisible by remember { mutableStateOf(false) }
-    var isDisplayedConnexionWifiVisible by remember { mutableStateOf(false) }
-    var showProductDisplay by remember { mutableStateOf(false) }
-    var lockHost by remember { mutableStateOf(false) }
-
 
 
     Surface(
@@ -63,26 +86,18 @@ fun MainScreen(
                 // Main Content Area
                 Box(modifier = Modifier.weight(1f)) {
                     AppNavHost(
-                        appViewModels = appViewModels,
                         navController = navController,
                         modifier = Modifier.fillMaxSize(),
                         isFabVisible = isFabVisible
                     )
 
-                    // Disable interactions when not host phone
-                    if (!productDisplayController.isHostPhone && productDisplayController.isConnected) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable(enabled = false) { }
-                        )
-                    }
+
                 }
             }
 
             // Navigation Bar with FAB
             AnimatedVisibility(
-                visible = productDisplayController.isHostPhone || !productDisplayController.isConnected,
+                visible = true,
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 NavigationBarWithFab(
@@ -100,26 +115,9 @@ fun MainScreen(
                     isFabVisible = isFabVisible,
                     onToggleFabVisibility = {
                         isFabVisible = !isFabVisible
-                        isDisplayedConnexionWifiVisible = false
                     },
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-
-
-            if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        progress = { uiState.loadingProgress / 100f },
-                        modifier = Modifier.size(48.dp),
-                        trackColor = ProgressIndicatorDefaults.circularTrackColor,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
-    }
+        } }
 }

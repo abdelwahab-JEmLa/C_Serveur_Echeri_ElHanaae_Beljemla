@@ -1,19 +1,20 @@
+// AppDatabase.kt
 package com.example.serveurecherielhanaaebeljemla.Modules.Main
 
-import a_RoomDB.ArticlesBasesStatsTable
-import a_RoomDB.CategoriesTabelle
-import a_RoomDB.ClientsModel
-import a_RoomDB.ColorsArticlesTabelle
-import a_RoomDB.SoldArticlesTabelle
+import a_RoomDB.*
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import androidx.room.*
+import com.example.Start.P2_ClientBonsByDay.clientbonsbyday.ClientBonsByDay
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import java.util.Date
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Database(
     entities = [
@@ -22,15 +23,15 @@ import java.util.Date
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
         ClientsModel::class,
-        AppSettingsSaverModel::class ,
-        DevicesTypeManager::class ,
+        AppSettingsSaverModel::class,
+        DevicesTypeManager::class,
+        ClientBonsByDay::class
     ],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
-    // All DAOs
     abstract fun articlesBasesStatsModelDao(): ArticlesBasesStatsModelDao
     abstract fun categoriesModelDao(): CategoriesModelDao
     abstract fun colorsArticlesDao(): ColorsArticlesDao
@@ -38,35 +39,94 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun clientsModelDao(): ClientsModelDao
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
+    abstract fun clientBonsByDayDao(): ClientBonsByDayDao
 
-    // DatabaseModule.kt
-    object DatabaseModule {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app_database"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
+    companion object {
+        const val DATABASE_NAME = "app_database"
     }
 }
 
-// First, let's properly set up the DateConverter
+// DateConverter.kt
 class DateConverter {
     @TypeConverter
-    fun toDate(timestamp: Long?): Date? {
-        return timestamp?.let { Date(it) }
-    }
+    fun toDate(timestamp: Long?): Date? = timestamp?.let { Date(it) }
 
     @TypeConverter
-    fun fromDate(date: Date?): Long? {
-        return date?.time
-    }
+    fun fromDate(date: Date?): Long? = date?.time
+}
+
+// DatabaseModule.kt
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(
+        @ApplicationContext context: Context
+    ): AppDatabase = Room.databaseBuilder(
+        context.applicationContext,
+        AppDatabase::class.java,
+        AppDatabase.DATABASE_NAME
+    ).build()
+
+    @Provides
+    @Singleton
+    fun provideClientBonsByDayDao(db: AppDatabase) = db.clientBonsByDayDao()
+
+    @Provides
+    @Singleton
+    fun provideArticlesBasesStatsModelDao(db: AppDatabase) = db.articlesBasesStatsModelDao()
+
+    @Provides
+    @Singleton
+    fun provideCategoriesModelDao(db: AppDatabase) = db.categoriesModelDao()
+
+    @Provides
+    @Singleton
+    fun provideColorsArticlesDao(db: AppDatabase) = db.colorsArticlesDao()
+
+    @Provides
+    @Singleton
+    fun provideSoldArticlesTabelleDao(db: AppDatabase) = db.soldArticlesModelDao()
+
+    @Provides
+    @Singleton
+    fun provideClientsModelDao(db: AppDatabase) = db.clientsModelDao()
+
+    @Provides
+    @Singleton
+    fun provideAppSettingsSaverModelDao(db: AppDatabase) = db.appSettingsSaverModelDao()
+
+    @Provides
+    @Singleton
+    fun provideDevicesTypeManagerDao(db: AppDatabase) = db.devicesTypeManagerDao()
+}
+
+
+@Singleton
+class DatabaseRepository @Inject constructor(
+    private val appDatabase: AppDatabase,
+    private val clientBonsByDayDao: ClientBonsByDayDao,
+    private val articlesBasesStatsModelDao: ArticlesBasesStatsModelDao,
+    private val categoriesModelDao: CategoriesModelDao,
+    private val colorsArticlesDao: ColorsArticlesDao,
+    private val soldArticlesTabelleDao: SoldArticlesTabelleDao,
+    private val clientsModelDao: ClientsModelDao,
+    private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
+    private val devicesTypeManagerDao: DevicesTypeManagerDao
+) {
+    fun getDaos() = listOf(
+        clientBonsByDayDao,
+        articlesBasesStatsModelDao,
+        categoriesModelDao,
+        colorsArticlesDao,
+        soldArticlesTabelleDao,
+        clientsModelDao,
+        appSettingsSaverModelDao,
+        devicesTypeManagerDao
+    )
+
+    // You can add useful database operations here
+    fun getDatabase() = appDatabase
 }

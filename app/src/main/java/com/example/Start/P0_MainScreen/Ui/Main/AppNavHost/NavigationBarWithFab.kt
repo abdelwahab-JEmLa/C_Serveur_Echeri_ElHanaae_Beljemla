@@ -104,57 +104,5 @@ fun NavigationBarWithFab(
         }
     }
 }
-// Add this to your project if it's missing
-object NavigationItems {
-    fun getItems() = listOf(
-        Screen.EditDatabaseWithCreateNewArticles,
-        Screen.SoldCart,
-        Screen.BakingScreen,
-        Screen.ToggleFab
-    )
-}
 
-sealed class Screen(
-    val route: String,
-    val icon: ImageVector,
-    val title: String,
-    val color: Color
-) {
-    data object EditDatabaseWithCreateNewArticles : Screen(
-        route = "main_fragment_edit_database_with_create_new_articles",
-        icon = Icons.Default.EditRoad,
-        title = "Create New Articles",
-        color = Color(0xFFE30E0E)
-    )
-
-    data object SoldCart : Screen(
-        route = "sold_cart",
-        icon = Icons.Default.ShoppingCart,
-        title = "Panier Sold",
-        color = Color(0xFF4CAF50)
-    )
-
-    data object BakingScreen : Screen(
-        route = "baking_Screen",
-        icon = Icons.Default.CreditScore,
-        title = "baking Screen",
-        color = Color(0xFFE91E63)
-    )
-
-    data object ToggleFab : Screen(
-        route = "toggle_fab",
-        icon = Icons.Default.Visibility,
-        title = "Toggle FAB",
-        color = Color(0xFF2196F3)
-    )
-    data object ClientProductDisplay : Screen(
-        route = "client_product_display/{productId}",
-        icon = Icons.Default.ProductionQuantityLimits,
-        title = "Product Display",
-        color = Color(0xFF2196F3)
-    ) {
-        fun createRoute(productId: Long) = "client_product_display/$productId"
-    }
-
-}
 
