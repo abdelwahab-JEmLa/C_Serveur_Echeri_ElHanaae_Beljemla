@@ -6,13 +6,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.ClientBonsByDayDao
-import com.example.serveurecherielhanaaebeljemla.Modules.Main.StatistiquesSoldInDayDao
+import com.example.serveurecherielhanaaebeljemla.Modules.Main.DaySoldStatisticsDao
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,18 +26,14 @@ import javax.inject.Inject
  */
 data class ClientBonsByDayActions(
     val onClick: () -> Unit = {},
-    val onAddBon: (DaySoldBonsModel) -> Unit = {},
-    val onDeleteBon: (DaySoldBonsModel) -> Unit = {}
-)
+  )
 
 @Composable
 fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientBonsByDayActions {
     return remember(viewModel) {
         ClientBonsByDayActions(
             onClick = {},
-            onAddBon = { bon -> viewModel.upsertBon(bon) },
-            onDeleteBon = { bon -> viewModel.deleteBon(bon) }
-        )
+            )
     }
 }
 
@@ -46,7 +41,7 @@ fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientB
 class ClientBonsByDayViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val clientBonsByDayDao: ClientBonsByDayDao,
-    private val statistiquesSoldInDayDao: StatistiquesSoldInDayDao,
+    private val daySoldStatisticsDao: DaySoldStatisticsDao,
 ) : ViewModel() {
 
     // État UI
@@ -56,7 +51,7 @@ class ClientBonsByDayViewModel @Inject constructor(
     // Firebase Setup
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refDaySoldBons = firebaseDatabase.getReference("1_DaySoldBons")
-    private val refStatistics = firebaseDatabase.getReference("1_StatistiquesSoldInDay")
+    private val refDaySoldStatistics = firebaseDatabase.getReference("1B_DaySoldStatistics")
     private var valueEventListener: ValueEventListener? = null
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
@@ -78,21 +73,21 @@ class ClientBonsByDayViewModel @Inject constructor(
             val payedInDay = todaysBons.sumOf { it.payed }
 
             // Création ou mise à jour des statistiques
-            val statistics = StatistiquesSoldInDay(
+            val statistics = DaySoldStatistics(
                 dayDate = today,
                 totalInDay = totalInDay,
                 payedInDay = payedInDay
             )
 
             // Mise à jour base de données locale
-            val existingStats = statistiquesSoldInDayDao.getStatisticsByDate(today)
+            val existingStats = daySoldStatisticsDao.getStatisticsByDate(today)
             if (existingStats != null) {
                 statistics.vid = existingStats.vid
             }
-            statistiquesSoldInDayDao.upsert(statistics)
+            daySoldStatisticsDao.upsert(statistics)
 
             // Mise à jour Firebase
-            refStatistics.child(today).setValue(statistics)
+            refDaySoldStatistics.child(today).setValue(statistics)
         } catch (e: Exception) {
             _stateFlow.update { it.copy(error = "Erreur mise à jour statistiques: ${e.message}") }
         }
@@ -174,10 +169,10 @@ class ClientBonsByDayViewModel @Inject constructor(
 
                 // Collecteur pour les statistiques
                 launch {
-                    statistiquesSoldInDayDao.getAllFlow().collect { statistics ->
+                    daySoldStatisticsDao.getAllFlow().collect { statistics ->
                         _stateFlow.update { currentState ->
                             currentState.copy(
-                                statistiquesSoldInDay = statistics,
+                                daySoldStatistics = statistics,
                                 isLoading = false,
                                 isInitialized = true
                             )

@@ -1,17 +1,11 @@
 package com.example.Start.P2_ClientBonsByDay
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-
-
-
 
 
 /**
@@ -47,7 +41,6 @@ class ClientBonsByDayStatePreviewParameterProvider :
     override val count: Int = 1
 }
 
-// Alternative preview using PreviewParameter
 @Preview(showBackground = true)
 @Composable
 fun ClientBonsByDayScreenParameterizedPreview(
@@ -55,11 +48,23 @@ fun ClientBonsByDayScreenParameterizedPreview(
     state: DaySoldBonsScreen
 ) {
     MaterialTheme {
-        ClientBonsByDayScreen(
-            state = state,
-            actions = ClientBonsByDayActions(
-                onAddBon = {}
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ClientBonsByDayScreen(
+                state = state.copy(
+                    daySoldStatistics = listOf(
+                        DaySoldStatistics(
+                            vid = 1,
+                            dayDate = "2024-11-24",
+                            totalInDay = 19287.8,
+                            payedInDay = 18500.0
+                        )
+                    )
+                ),
+                actions = ClientBonsByDayActions(
+                )
             )
-        )
+        }
     }
 }

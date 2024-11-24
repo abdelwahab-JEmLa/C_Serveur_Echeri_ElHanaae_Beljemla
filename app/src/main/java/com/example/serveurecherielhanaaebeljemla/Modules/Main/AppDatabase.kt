@@ -5,7 +5,7 @@ import a_RoomDB.*
 import android.content.Context
 import androidx.room.*
 import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
-import com.example.Start.P2_ClientBonsByDay.StatistiquesSoldInDay
+import com.example.Start.P2_ClientBonsByDay.DaySoldStatistics
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 import dagger.Module
@@ -27,7 +27,7 @@ import javax.inject.Singleton
         AppSettingsSaverModel::class,
         DevicesTypeManager::class,
         DaySoldBonsModel::class  ,
-        StatistiquesSoldInDay ::class  ,
+        DaySoldStatistics ::class  ,
     ],
     version = 1,
     exportSchema = false
@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
     abstract fun clientBonsByDayDao(): ClientBonsByDayDao
-    abstract fun statistiquesSoldInDayDao(): StatistiquesSoldInDayDao
+    abstract fun daySoldStatisticsDao(): DaySoldStatisticsDao
 
 
     companion object {
@@ -107,7 +107,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideStatistiquesSoldInDayDao(db: AppDatabase) = db.statistiquesSoldInDayDao()
+    fun provideDaySoldStatisticsDao(db: AppDatabase) = db.daySoldStatisticsDao()
 }
 
 
@@ -122,7 +122,7 @@ class DatabaseRepository @Inject constructor(
     private val clientsModelDao: ClientsModelDao,
     private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
     private val devicesTypeManagerDao: DevicesTypeManagerDao ,
-    private val statistiquesSoldInDayDao: StatistiquesSoldInDayDao
+    private val daySoldStatisticsDao: DaySoldStatisticsDao
 
 ) {
     fun getDaos() = listOf(
@@ -134,7 +134,7 @@ class DatabaseRepository @Inject constructor(
         clientsModelDao,
         appSettingsSaverModelDao,
         devicesTypeManagerDao,
-        statistiquesSoldInDayDao
+        daySoldStatisticsDao
     )
 
     // You can add useful database operations here

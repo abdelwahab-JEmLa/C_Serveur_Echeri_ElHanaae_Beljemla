@@ -8,13 +8,13 @@ import androidx.room.PrimaryKey
  **/
 data class DaySoldBonsScreen(
     val daySoldBonsModel: List<DaySoldBonsModel> = emptyList(),
-    val statistiquesSoldInDay: List<StatistiquesSoldInDay> = emptyList(),
+    val daySoldStatistics: List<DaySoldStatistics> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
     val isInitialized: Boolean = false
 )
 @Entity
-data class StatistiquesSoldInDay(
+data class DaySoldStatistics(
     @PrimaryKey(autoGenerate = true)
     var vid: Long = 0,
     val dayDate: String = "",

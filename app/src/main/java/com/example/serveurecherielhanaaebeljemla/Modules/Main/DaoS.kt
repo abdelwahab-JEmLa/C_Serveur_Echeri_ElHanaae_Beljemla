@@ -16,31 +16,31 @@ import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
 import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
-import com.example.Start.P2_ClientBonsByDay.StatistiquesSoldInDay
+import com.example.Start.P2_ClientBonsByDay.DaySoldStatistics
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
+
 @Dao
-interface StatistiquesSoldInDayDao {
-    @Query("SELECT * FROM StatistiquesSoldInDay ORDER BY dayDate DESC")
-    fun getAllFlow(): Flow<List<StatistiquesSoldInDay>>
+interface DaySoldStatisticsDao {
+    @Query("SELECT * FROM DaySoldStatistics ORDER BY dayDate DESC")
+    fun getAllFlow(): Flow<List<DaySoldStatistics>>
 
-    @Query("SELECT * FROM StatistiquesSoldInDay ORDER BY dayDate DESC")
-    suspend fun getAll(): List<StatistiquesSoldInDay>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(value: StatistiquesSoldInDay)
+    @Query("SELECT * FROM DaySoldStatistics ORDER BY dayDate DESC")
+    suspend fun getAll(): List<DaySoldStatistics>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(list: List<StatistiquesSoldInDay>)
+    suspend fun upsert(value: DaySoldStatistics)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(list: List<DaySoldStatistics>)
 
     @Delete
-    suspend fun delete(bon: StatistiquesSoldInDay)
+    suspend fun delete(bon: DaySoldStatistics)
 
-    @Query("DELETE FROM StatistiquesSoldInDay")
+    @Query("DELETE FROM DaySoldStatistics")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM StatistiquesSoldInDay WHERE dayDate = :date LIMIT 1")
-    suspend fun getStatisticsByDate(date: String): StatistiquesSoldInDay?
+    @Query("SELECT * FROM DaySoldStatistics WHERE dayDate = :date LIMIT 1")
+    suspend fun getStatisticsByDate(date: String): DaySoldStatistics?
 }
 @Dao
 interface ClientBonsByDayDao {

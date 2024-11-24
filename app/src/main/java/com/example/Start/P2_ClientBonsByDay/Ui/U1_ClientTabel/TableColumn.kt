@@ -1,10 +1,24 @@
 package com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,39 +39,49 @@ fun <T> TableGrid(
     columns: List<TableColumn<T>>,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    ElevatedCard(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 6.dp
+        ),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        // Headers
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            columns.forEach { column ->
-                GridHeader(
-                    modifier = Modifier.weight(column.weight),
-                    text = column.title
-                )
-            }
-        }
-
-        // Data rows
-        items.forEach { item ->
+            // Headers with enhanced styling
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 2.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 columns.forEach { column ->
-                    GridCell(
+                    GridHeader(
                         modifier = Modifier.weight(column.weight),
-                        text = column.content(item)
+                        text = column.title
                     )
+                }
+            }
+
+            // Data rows with enhanced styling
+            items.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    columns.forEach { column ->
+                        GridCell(
+                            modifier = Modifier.weight(column.weight),
+                            text = column.content(item)
+                        )
+                    }
                 }
             }
         }
@@ -69,19 +93,26 @@ private fun GridHeader(
     modifier: Modifier = Modifier,
     text: String
 ) {
-    Box(
+    Surface(
         modifier = modifier
-            .height(40.dp)
-            .border(1.dp, MaterialTheme.colorScheme.primary)
-            .padding(horizontal = 4.dp),
-        contentAlignment = Alignment.Center
+            .height(48.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        tonalElevation = 2.dp
     ) {
-        AutoResizedText(
-            text = text,
-            style = MaterialTheme.typography.headlineSmall,
-            maxLines = 2,
-            color = Color.Red
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            AutoResizedText(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     }
 }
 
@@ -90,20 +121,28 @@ private fun GridCell(
     modifier: Modifier = Modifier,
     text: String
 ) {
-    Box(
+    Surface(
         modifier = modifier
-            .height(40.dp)
-            .border(0.5.dp, Color.LightGray)
-            .padding(horizontal = 4.dp), // Added horizontal padding
-        contentAlignment = Alignment.Center
+            .height(44.dp),
+        shape = RoundedCornerShape(4.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp
     ) {
-        AutoResizedText(
-            text = text,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 2,
-            modifier = Modifier.fillMaxWidth(), // Added fillMaxWidth
-            textAlign = TextAlign.Center // Added center alignment
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            AutoResizedText(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 2,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 
@@ -118,7 +157,7 @@ fun AutoResizedText(
 ) {
     var fontSize by remember(text) { mutableStateOf(style.fontSize) }
     var readyToDraw by remember { mutableStateOf(false) }
-    
+
     Text(
         text = text,
         color = color,
