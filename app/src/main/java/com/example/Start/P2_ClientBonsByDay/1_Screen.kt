@@ -23,159 +23,44 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.Start.P2_ClientBonsByDay.Ui.TableColumn
+import com.example.Start.P2_ClientBonsByDay.Ui.TableGrid
 
 @Composable
 fun ClientBonsByDayScreen(
     state: DaySoldBonsScreen,
     actions: ClientBonsByDayActions
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Headers row
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            GridHeader(
-                modifier = Modifier.weight(0.5f),
-                text = "ID"
-            )
-            GridHeader(
-                modifier = Modifier.weight(0.5f),
-                text = "Client ID"
-            )
-            GridHeader(
-                modifier = Modifier.weight(1f),
-                text = "Client Name"
-            )
-            GridHeader(
-                modifier = Modifier.weight(1f),
-                text = "Total"
-            )
-            GridHeader(
-                modifier = Modifier.weight(1f),
-                text = "Payed"
-            )
-            GridHeader(
-                modifier = Modifier.weight(1f),
-                text = "Date"
-            )
-        }
+    val columns = listOf(
+        TableColumn(
+            title = "ID",
+            weight = 0.5f
+        ) { it.id.toString() },
+        TableColumn(
+            title = "Client ID",
+            weight = 0.5f
+        ) { it.idClient.toString() },
+        TableColumn(
+            title = "Client Name",
+            weight = 1f
+        ) { it.nameClient },
+        TableColumn(
+            title = "Total",
+            weight = 1f
+        ) { "%.2f".format(it.total) },
+        TableColumn(
+            title = "Payed",
+            weight = 1f
+        ) { "%.2f".format(it.payed) },
+        TableColumn<DaySoldBonsModel>(
+            title = "Date",
+            weight = 1f
+        ) { it.date }
+    )
 
-        // Data rows
-        state.daySoldBonsModel.forEach { bon ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                // ID column - narrower
-                GridCell(
-                    modifier = Modifier.weight(0.5f),
-                    text = bon.id.toString()
-                )
-                // Client ID column - narrower
-                GridCell(
-                    modifier = Modifier.weight(0.5f),
-                    text = bon.idClient.toString()
-                )
-                // Other columns - normal width
-                GridCell(
-                    modifier = Modifier.weight(1f),
-                    text = bon.nameClient
-                )
-                GridCell(
-                    modifier = Modifier.weight(1f),
-                    text = "%.2f".format(bon.total)
-                )
-                GridCell(
-                    modifier = Modifier.weight(1f),
-                    text = "%.2f".format(bon.payed)
-                )
-                GridCell(
-                    modifier = Modifier.weight(1f),
-                    text = bon.date
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun GridHeader(
-    modifier: Modifier = Modifier,
-    text: String
-) {
-    Box(
-        modifier = modifier
-            .height(40.dp)
-            .border(1.dp, MaterialTheme.colorScheme.primary)
-            .padding(horizontal = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleSmall,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-@Composable
-fun AutoResizedText(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface,
-    style: TextStyle = MaterialTheme.typography.headlineMedium,
-    maxLines: Int = Int.MAX_VALUE
-) {
-    var fontSize by remember(text) {
-        mutableStateOf(style.fontSize)
-    }
-
-    var previousFontSize by remember {
-        mutableStateOf(fontSize)
-    }
-
-    Text(
-        text = text,
-        color = color,
-        fontSize = fontSize,
-        maxLines = maxLines,
-        overflow = TextOverflow.Ellipsis,
-        modifier = modifier,
-        onTextLayout = { textLayoutResult ->
-            if (textLayoutResult.hasVisualOverflow) {
-                previousFontSize = fontSize
-                fontSize *= 0.9f
-            } else if (fontSize != previousFontSize) {
-                previousFontSize = fontSize
-            }
-        }
+    TableGrid(
+        items = state.daySoldBonsModel,
+        columns = columns
     )
 }
-@Composable
-private fun GridCell(
-    modifier: Modifier = Modifier,
-    text: String
-) {
-    Box(
-        modifier = modifier
-            .height(40.dp)
-            .border(0.5.dp, Color.LightGray),
-        contentAlignment = Alignment.Center
-    ) {
-        AutoResizedText(  text = text,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 2,
-            )
-    }
-}
+
