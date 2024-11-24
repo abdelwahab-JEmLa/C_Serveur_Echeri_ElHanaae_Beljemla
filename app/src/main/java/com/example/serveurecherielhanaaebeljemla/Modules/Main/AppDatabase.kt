@@ -4,6 +4,7 @@ package com.example.serveurecherielhanaaebeljemla.Modules.Main
 import a_RoomDB.*
 import android.content.Context
 import androidx.room.*
+import com.example.Start.P2_ClientBonsByDay.BuyBonModel
 import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
 import com.example.Start.P2_ClientBonsByDay.DaySoldStatistics
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
@@ -27,7 +28,9 @@ import javax.inject.Singleton
         AppSettingsSaverModel::class,
         DevicesTypeManager::class,
         DaySoldBonsModel::class  ,
-        DaySoldStatistics ::class  ,
+        DaySoldStatistics::class,
+        BuyBonModel::class  // Added BuyBonModel to entities
+
     ],
     version = 1,
     exportSchema = false
@@ -43,6 +46,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
     abstract fun clientBonsByDayDao(): ClientBonsByDayDao
     abstract fun daySoldStatisticsDao(): DaySoldStatisticsDao
+    abstract fun buyBonDao(): BuyBonModelDao
 
 
     companion object {
@@ -108,6 +112,11 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDaySoldStatisticsDao(db: AppDatabase) = db.daySoldStatisticsDao()
+
+    @Provides
+    @Singleton
+    fun provideBuyBonDao(db: AppDatabase) = db.buyBonDao()
+
 }
 
 
@@ -122,7 +131,9 @@ class DatabaseRepository @Inject constructor(
     private val clientsModelDao: ClientsModelDao,
     private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
     private val devicesTypeManagerDao: DevicesTypeManagerDao ,
-    private val daySoldStatisticsDao: DaySoldStatisticsDao
+    private val daySoldStatisticsDao: DaySoldStatisticsDao ,
+    private val buyBonDao: BuyBonModelDao
+
 
 ) {
     fun getDaos() = listOf(
@@ -134,7 +145,9 @@ class DatabaseRepository @Inject constructor(
         clientsModelDao,
         appSettingsSaverModelDao,
         devicesTypeManagerDao,
-        daySoldStatisticsDao
+        daySoldStatisticsDao  ,
+        buyBonDao ,
+
     )
 
     // You can add useful database operations here

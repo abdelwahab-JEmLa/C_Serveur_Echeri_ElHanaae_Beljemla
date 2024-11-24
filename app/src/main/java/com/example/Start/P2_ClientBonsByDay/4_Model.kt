@@ -9,6 +9,8 @@ import androidx.room.PrimaryKey
 data class DaySoldBonsScreen(
     val daySoldBonsModel: List<DaySoldBonsModel> = emptyList(),
     val daySoldStatistics: List<DaySoldStatistics> = emptyList(),
+    val buyBonModel: List<BuyBonModel> = emptyList(),
+
     val isLoading: Boolean = true,
     val error: String? = null,
     val isInitialized: Boolean = false
@@ -31,6 +33,19 @@ data class DaySoldBonsModel(
     val total: Double = 0.0,
     val payed: Double = 0.0,
     val date: String = "",
+) {
+    // No-argument constructor for Firebase
+    constructor() : this(0)
+}
+@Entity
+data class BuyBonModel(
+    @PrimaryKey(autoGenerate = true)
+    var vid: Long = 0,
+    val date: String = "",
+    val idSupplier: Long = 0,
+    val nameSupplier: String = "",
+    val total: Double = 0.0,
+    val payed: Double = 0.0,
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)

@@ -41,9 +41,68 @@ fun ClientBonsByDayScreen(
         item {
             ClientTable(state)
         }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Buy Bon Table
+        item {
+            BuyBonTable(state)
+        }
     }
 }
 
+@Composable
+private fun BuyBonTable(state: DaySoldBonsScreen) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = "Achats des Bons",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        val columns = listOf(
+            TableColumn<BuyBonModel>(
+                title = "ID",
+                weight = 0.5f
+            ) { it.vid.toString() },
+            TableColumn<BuyBonModel>(
+                title = "Date",
+                weight = 1f
+            ) { it.date },
+            TableColumn<BuyBonModel>(
+                title = "Fournisseur ID",
+                weight = 0.5f
+            ) { it.idSupplier.toString() },
+            TableColumn<BuyBonModel>(
+                title = "Fournisseur",
+                weight = 1f
+            ) { it.nameSupplier },
+            TableColumn<BuyBonModel>(
+                title = "Total",
+                weight = 1f
+            ) { "%.2f".format(it.total) },
+            TableColumn<BuyBonModel>(
+                title = "Payé",
+                weight = 1f
+            ) { "%.2f".format(it.payed) },
+            TableColumn<BuyBonModel>(
+                title = "Reste",
+                weight = 1f
+            ) { "%.2f".format(it.total - it.payed) }
+        )
+
+        TableGrid(
+            items = state.buyBonModel,
+            columns = columns
+        )
+    }
+}
 @Composable
 private fun DaySoldStatisticsTabele(state: List<DaySoldStatistics>) {
     val columns = listOf(

@@ -12,12 +12,37 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.Start.P2_ClientBonsByDay.BuyBonModel
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
 import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
 import com.example.Start.P2_ClientBonsByDay.DaySoldStatistics
 import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface BuyBonModelDao {
+    @Query("SELECT * FROM BuyBonModel ORDER BY date DESC")
+    fun getAllFlow(): Flow<List<BuyBonModel>>
+
+    @Query("SELECT * FROM BuyBonModel ORDER BY date DESC")
+    suspend fun getAll(): List<BuyBonModel>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(value: BuyBonModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(list: List<BuyBonModel>)
+
+    @Delete
+    suspend fun delete(bon: BuyBonModel)
+
+    @Query("DELETE FROM BuyBonModel")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM BuyBonModel WHERE date = :date LIMIT 1")
+    suspend fun getStatisticsByDate(date: String): BuyBonModel?
+}
 
 @Dao
 interface DaySoldStatisticsDao {
