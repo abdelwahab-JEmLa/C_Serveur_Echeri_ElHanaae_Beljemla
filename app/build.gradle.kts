@@ -138,16 +138,9 @@ dependencies {
     implementation(libs.timber)
 
     // Update Hilt dependencies
-    implementation("com.google.dagger:hilt-android:2.48")
-    kapt("com.google.dagger:hilt-android-compiler:2.48")
-
-    // Add these specific Hilt dependencies
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
-
-    // Pour l'utilisation de @HiltViewModel
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 }
 
