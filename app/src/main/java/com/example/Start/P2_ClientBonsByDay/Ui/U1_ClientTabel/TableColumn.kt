@@ -42,7 +42,7 @@ fun <T> TableGrid(
     ElevatedCard(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(4.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 6.dp
         ),
@@ -51,13 +51,13 @@ fun <T> TableGrid(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(4.dp)
         ) {
             // Headers with enhanced styling
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp),
+                    .padding(bottom = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 columns.forEach { column ->
@@ -131,7 +131,7 @@ private fun GridCell(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 4.dp),
             contentAlignment = Alignment.Center
         ) {
             AutoResizedText(
