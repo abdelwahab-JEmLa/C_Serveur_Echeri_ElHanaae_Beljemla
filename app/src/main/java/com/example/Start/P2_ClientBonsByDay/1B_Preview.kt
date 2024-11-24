@@ -11,6 +11,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 
+
+
 /**
  * PreviewParameter Provider for ClientBonsByDayScreen Preview
  * Provides sample data for the preview
@@ -48,11 +50,9 @@ fun ClientBonsByDayScreenPreview(
     @PreviewParameter(ClientBonsByDayStatePreviewParameterProvider::class)
     state: DaySoldBonsScreen
 ) {
-    var previewState by remember { mutableStateOf(state) }
-
     MaterialTheme {
         ClientBonsByDayScreen(
-            state = previewState,
+            state = state,
             actions = ClientBonsByDayActions(
                 onAddBon = {}
             )
