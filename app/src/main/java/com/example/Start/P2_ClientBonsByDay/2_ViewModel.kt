@@ -6,22 +6,25 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.ClientBonsByDayDao
+import com.example.serveurecherielhanaaebeljemla.Modules.Main.StatistiquesSoldInDayDao
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
- * ClientBonsByDay Actions emitted from the UI Layer
- * passed to the coordinator to handle
- **/
+ * Actions UI pour ClientBonsByDay
+ */
 data class ClientBonsByDayActions(
     val onClick: () -> Unit = {},
     val onAddBon: (DaySoldBonsModel) -> Unit = {},
@@ -42,27 +45,77 @@ fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientB
 @HiltViewModel
 class ClientBonsByDayViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val clientBonsByDayDao: ClientBonsByDayDao
+    private val clientBonsByDayDao: ClientBonsByDayDao,
+    private val statistiquesSoldInDayDao: StatistiquesSoldInDayDao,
 ) : ViewModel() {
+
+    // État UI
     private val _stateFlow = MutableStateFlow(DaySoldBonsScreen())
     val state: StateFlow<DaySoldBonsScreen> = _stateFlow.asStateFlow()
+
+    // Firebase Setup
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refDaySoldBons = firebaseDatabase.getReference("1_DaySoldBons")
+    private val refStatistics = firebaseDatabase.getReference("1_StatistiquesSoldInDay")
     private var valueEventListener: ValueEventListener? = null
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
+    init {
+        initializeData()
+        setupFirebaseListener()
+    }
+
+    /**
+     * Met à jour les statistiques quotidiennes
+     */
+    private suspend fun updateDailyStatistics(daySoldBons: List<DaySoldBonsModel>) {
+        try {
+            val today = LocalDate.now().format(dateFormatter)
+
+            // Calcul des totaux pour aujourd'hui
+            val todaysBons = daySoldBons.filter { it.date == today }
+            val totalInDay = todaysBons.sumOf { it.total }
+            val payedInDay = todaysBons.sumOf { it.payed }
+
+            // Création ou mise à jour des statistiques
+            val statistics = StatistiquesSoldInDay(
+                dayDate = today,
+                totalInDay = totalInDay,
+                payedInDay = payedInDay
+            )
+
+            // Mise à jour base de données locale
+            val existingStats = statistiquesSoldInDayDao.getStatisticsByDate(today)
+            if (existingStats != null) {
+                statistics.vid = existingStats.vid
+            }
+            statistiquesSoldInDayDao.upsert(statistics)
+
+            // Mise à jour Firebase
+            refStatistics.child(today).setValue(statistics)
+        } catch (e: Exception) {
+            _stateFlow.update { it.copy(error = "Erreur mise à jour statistiques: ${e.message}") }
+        }
+    }
+
+
+
+    /**
+     * Ajoute ou met à jour un bon
+     */
     fun upsertBon(bon: DaySoldBonsModel) {
         viewModelScope.launch {
             try {
-                // Update local Room database
+                // Mise à jour Room
                 clientBonsByDayDao.upsertBon(bon)
 
-                // Update Firebase
+                // Mise à jour Firebase
                 refDaySoldBons.child(bon.id.toString()).setValue(bon)
                     .addOnSuccessListener {
                         _stateFlow.update { it.copy(error = null) }
                     }
                     .addOnFailureListener { e ->
-                        val errorMessage = "Firebase update failed: ${e.message}"
+                        val errorMessage = "Erreur mise à jour Firebase: ${e.message}"
                         _stateFlow.update { it.copy(error = errorMessage) }
                         savedStateHandle["error"] = errorMessage
                     }
@@ -75,16 +128,19 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Supprime un bon
+     */
     fun deleteBon(bon: DaySoldBonsModel) {
         viewModelScope.launch {
             try {
-                // Delete from local Room database
+                // Suppression Room
                 clientBonsByDayDao.deleteBon(bon)
 
-                // Delete from Firebase
+                // Suppression Firebase
                 refDaySoldBons.child(bon.id.toString()).removeValue()
                     .addOnFailureListener { e ->
-                        val errorMessage = "Firebase deletion failed: ${e.message}"
+                        val errorMessage = "Erreur suppression Firebase: ${e.message}"
                         _stateFlow.update { it.copy(error = errorMessage) }
                     }
             } catch (e: Exception) {
@@ -93,21 +149,66 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
-    init {
-        initializeData()
-        setupFirebaseListener()
+    /**
+     * Initialise les données
+     */
+    private fun initializeData() {
+        viewModelScope.launch {
+            try {
+                // Collecteurs séparés pour les bons et les statistiques
+                launch {
+                    clientBonsByDayDao.getAllBonsFlow().collect { bons ->
+                        // Mise à jour des statistiques
+                        updateDailyStatistics(bons)
+
+                        // Mise à jour de l'état
+                        _stateFlow.update { currentState ->
+                            currentState.copy(
+                                daySoldBonsModel = bons,
+                                isLoading = false,
+                                isInitialized = true
+                            )
+                        }
+                    }
+                }
+
+                // Collecteur pour les statistiques
+                launch {
+                    statistiquesSoldInDayDao.getAllFlow().collect { statistics ->
+                        _stateFlow.update { currentState ->
+                            currentState.copy(
+                                statistiquesSoldInDay = statistics,
+                                isLoading = false,
+                                isInitialized = true
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _stateFlow.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Erreur initialisation: ${e.message}",
+                        isInitialized = false
+                    )
+                }
+            }
+        }
     }
 
+    /**
+     * Configure l'écouteur Firebase
+     */
     private fun setupFirebaseListener() {
         valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 viewModelScope.launch {
                     try {
-                        // Get current local data
+                        // Récupération données locales
                         val localBons = clientBonsByDayDao.getAllBons()
                         val localBonsMap = localBons.associateBy { it.id }
 
-                        // Process Firebase data
+                        // Traitement données Firebase
                         val firebaseBons = mutableListOf<DaySoldBonsModel>()
                         snapshot.children.forEach { childSnapshot ->
                             childSnapshot.getValue(DaySoldBonsModel::class.java)?.let { bon ->
@@ -115,10 +216,10 @@ class ClientBonsByDayViewModel @Inject constructor(
                             }
                         }
 
-                        // Compare and sync data
+                        // Comparaison et synchronisation
                         val firebaseBonsMap = firebaseBons.associateBy { it.id }
 
-                        // Handle updates and additions
+                        // Gestion mises à jour et ajouts
                         firebaseBons.forEach { firebaseBon ->
                             val localBon = localBonsMap[firebaseBon.id]
                             if (localBon == null || localBon != firebaseBon) {
@@ -126,7 +227,7 @@ class ClientBonsByDayViewModel @Inject constructor(
                             }
                         }
 
-                        // Handle deletions
+                        // Gestion suppressions
                         localBons.forEach { localBon ->
                             if (!firebaseBonsMap.containsKey(localBon.id)) {
                                 clientBonsByDayDao.deleteBon(localBon)
@@ -134,13 +235,13 @@ class ClientBonsByDayViewModel @Inject constructor(
                         }
 
                     } catch (e: Exception) {
-                        _stateFlow.update { it.copy(error = "Firebase sync error: ${e.message}") }
+                        _stateFlow.update { it.copy(error = "Erreur sync Firebase: ${e.message}") }
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                _stateFlow.update { it.copy(error = "Firebase sync cancelled: ${error.message}") }
+                _stateFlow.update { it.copy(error = "Sync Firebase annulée: ${error.message}") }
             }
         }
 
@@ -149,30 +250,9 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
-    private fun initializeData() {
-        viewModelScope.launch {
-            try {
-                clientBonsByDayDao.getAllBonsFlow()
-                    .collect { bons ->
-                        _stateFlow.value = DaySoldBonsScreen(
-                            daySoldBonsModel = bons,
-                            isLoading = false,
-                            isInitialized = true
-                        )
-                    }
-            } catch (e: Exception) {
-                _stateFlow.value = DaySoldBonsScreen(
-                    isLoading = false,
-                    error = e.message,
-                    isInitialized = false
-                )
-            }
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
-        // Remove Firebase listener when ViewModel is cleared
+        // Suppression de l'écouteur Firebase
         valueEventListener?.let {
             refDaySoldBons.removeEventListener(it)
         }

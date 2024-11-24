@@ -12,8 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.Start.P2_ClientBonsByDay.Ui.AutoResizedText
-import com.example.Start.P2_ClientBonsByDay.Ui.TableColumn
+import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableColumn
 
 data class TableColumnT<T>(
     val title: String,

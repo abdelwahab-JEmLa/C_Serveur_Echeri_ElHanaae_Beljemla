@@ -1,4 +1,4 @@
-package com.example.Start.P2_ClientBonsByDay.Ui
+package com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -80,6 +80,7 @@ private fun GridHeader(
             text = text,
             style = MaterialTheme.typography.headlineSmall,
             maxLines = 2,
+            color = Color.Red
         )
     }
 }

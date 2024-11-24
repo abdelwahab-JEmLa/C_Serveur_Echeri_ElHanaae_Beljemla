@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.example.Start.P2_ClientBonsByDay.Ui.AddBonDialog
+import com.example.Start.P2_ClientBonsByDay.Ui.Objects.AddBonDialog
 
 /**
  * Object used for a type safe destination to a Home screen

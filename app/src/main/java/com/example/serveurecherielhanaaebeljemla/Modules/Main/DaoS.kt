@@ -16,9 +16,32 @@ import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
 import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
+import com.example.Start.P2_ClientBonsByDay.StatistiquesSoldInDay
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
+@Dao
+interface StatistiquesSoldInDayDao {
+    @Query("SELECT * FROM StatistiquesSoldInDay ORDER BY dayDate DESC")
+    fun getAllFlow(): Flow<List<StatistiquesSoldInDay>>
 
+    @Query("SELECT * FROM StatistiquesSoldInDay ORDER BY dayDate DESC")
+    suspend fun getAll(): List<StatistiquesSoldInDay>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(value: StatistiquesSoldInDay)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(list: List<StatistiquesSoldInDay>)
+
+    @Delete
+    suspend fun delete(bon: StatistiquesSoldInDay)
+
+    @Query("DELETE FROM StatistiquesSoldInDay")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM StatistiquesSoldInDay WHERE dayDate = :date LIMIT 1")
+    suspend fun getStatisticsByDate(date: String): StatistiquesSoldInDay?
+}
 @Dao
 interface ClientBonsByDayDao {
     @Query("SELECT * FROM DaySoldBonsModel ORDER BY date DESC")

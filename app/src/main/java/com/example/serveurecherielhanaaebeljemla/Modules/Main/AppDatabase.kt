@@ -5,6 +5,7 @@ import a_RoomDB.*
 import android.content.Context
 import androidx.room.*
 import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
+import com.example.Start.P2_ClientBonsByDay.StatistiquesSoldInDay
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 import dagger.Module
@@ -25,7 +26,8 @@ import javax.inject.Singleton
         ClientsModel::class,
         AppSettingsSaverModel::class,
         DevicesTypeManager::class,
-        DaySoldBonsModel::class
+        DaySoldBonsModel::class  ,
+        StatistiquesSoldInDay ::class  ,
     ],
     version = 1,
     exportSchema = false
@@ -40,6 +42,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
     abstract fun clientBonsByDayDao(): ClientBonsByDayDao
+    abstract fun statistiquesSoldInDayDao(): StatistiquesSoldInDayDao
+
 
     companion object {
         const val DATABASE_NAME = "app_database"
@@ -55,7 +59,6 @@ class DateConverter {
     fun fromDate(date: Date?): Long? = date?.time
 }
 
-// DatabaseModule.kt
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
@@ -101,6 +104,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDevicesTypeManagerDao(db: AppDatabase) = db.devicesTypeManagerDao()
+
+    @Provides
+    @Singleton
+    fun provideStatistiquesSoldInDayDao(db: AppDatabase) = db.statistiquesSoldInDayDao()
 }
 
 
@@ -114,7 +121,9 @@ class DatabaseRepository @Inject constructor(
     private val soldArticlesTabelleDao: SoldArticlesTabelleDao,
     private val clientsModelDao: ClientsModelDao,
     private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
-    private val devicesTypeManagerDao: DevicesTypeManagerDao
+    private val devicesTypeManagerDao: DevicesTypeManagerDao ,
+    private val statistiquesSoldInDayDao: StatistiquesSoldInDayDao
+
 ) {
     fun getDaos() = listOf(
         clientBonsByDayDao,
@@ -124,7 +133,8 @@ class DatabaseRepository @Inject constructor(
         soldArticlesTabelleDao,
         clientsModelDao,
         appSettingsSaverModelDao,
-        devicesTypeManagerDao
+        devicesTypeManagerDao,
+        statistiquesSoldInDayDao
     )
 
     // You can add useful database operations here
