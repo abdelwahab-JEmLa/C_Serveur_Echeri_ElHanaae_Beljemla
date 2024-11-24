@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import com.example.Start.P0_MainScreen.Main.MainScreen
+import com.example.Start.P0_MainScreen.MainScreen
 import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayViewModel
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.AppDatabase
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.DatabaseRepository

@@ -1,5 +1,7 @@
 package com.example.Start.P2_ClientBonsByDay
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +13,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+/**
+ * ClientBonsByDay Actions emitted from the UI Layer
+ * passed to the coordinator to handle
+ **/
+data class ClientBonsByDayActions(
+    val onClick: () -> Unit = {},
+    val onAddBon: (ClientBonsByDay) -> Unit = {},
+    val onUpdateBon: (ClientBonsByDay) -> Unit = {},
+    val onDeleteBon: (ClientBonsByDay) -> Unit = {}
+)
+
+@Composable
+fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientBonsByDayActions {
+    return remember(viewModel) {
+        ClientBonsByDayActions(
+            onClick = {},
+            onAddBon = { bon -> viewModel.addBon(bon) },
+            onUpdateBon = { bon -> viewModel.updateBon(bon) },
+            onDeleteBon = { bon -> viewModel.deleteBon(bon) }
+        )
+    }
+}
 
 @HiltViewModel
 class ClientBonsByDayViewModel @Inject constructor(

@@ -42,7 +42,7 @@ class ClientBonsByDayStatePreviewParameterProvider :
             )
         )
 }
-// In ClientBonsByDayContract.kt - Fix preview for add functionality
+// In 4_Model.kt - Fix preview for add functionality
 @Preview(showBackground = true)
 @Composable
 fun ClientBonsByDayScreenPreview(

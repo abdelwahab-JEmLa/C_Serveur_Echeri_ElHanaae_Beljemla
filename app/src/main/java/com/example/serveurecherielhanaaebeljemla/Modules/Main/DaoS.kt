@@ -42,6 +42,8 @@ interface ClientBonsByDayDao {
     @Query("DELETE FROM client_bons_by_day")
     suspend fun deleteAllBons()
 }
+
+
 @Dao
 interface ArticlesBasesStatsModelDao {
     @Query("SELECT * FROM ArticlesBasesStatsTable ORDER BY idCategorie")

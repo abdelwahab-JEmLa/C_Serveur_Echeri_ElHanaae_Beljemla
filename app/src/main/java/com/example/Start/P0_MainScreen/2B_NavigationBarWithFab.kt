@@ -1,4 +1,4 @@
-package P0_MainScreen.Ui.Main.AppNavHost
+package com.example.Start.P0_MainScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CreditScore
-import androidx.compose.material.icons.filled.EditRoad
-import androidx.compose.material.icons.filled.ProductionQuantityLimits
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
@@ -25,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp

@@ -1,9 +1,5 @@
-package com.example.Start.P0_MainScreen.Main
+package com.example.Start.P0_MainScreen
 
-import P0_MainScreen.Ui.Main.AppNavHost.AppNavHost
-import P0_MainScreen.Ui.Main.AppNavHost.NavigationBarWithFab
-import P0_MainScreen.Ui.Main.AppNavHost.NavigationItems
-import P0_MainScreen.Ui.Main.AppNavHost.Screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

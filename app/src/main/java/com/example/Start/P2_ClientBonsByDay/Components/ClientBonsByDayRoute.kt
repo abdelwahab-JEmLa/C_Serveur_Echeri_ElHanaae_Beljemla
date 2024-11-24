@@ -1,9 +1,13 @@
-package com.example.Start.P2_ClientBonsByDay
+package com.example.Start.P2_ClientBonsByDay.Components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayScreen
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayState
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayViewModel
+import com.example.Start.P2_ClientBonsByDay.rememberClientBonsByDayActions
 import kotlinx.serialization.Serializable
 
 /**

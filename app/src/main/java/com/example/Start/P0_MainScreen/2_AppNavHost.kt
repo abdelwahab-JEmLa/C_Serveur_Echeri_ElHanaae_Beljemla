@@ -1,4 +1,4 @@
-package P0_MainScreen.Ui.Main.AppNavHost
+package com.example.Start.P0_MainScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,14 +7,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditScore
-import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayDestination
-import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayRoute
+import com.example.Start.P2_ClientBonsByDay.Components.ClientBonsByDayDestination
+import com.example.Start.P2_ClientBonsByDay.Components.ClientBonsByDayRoute
 
 @Composable
 fun AppNavHost(
