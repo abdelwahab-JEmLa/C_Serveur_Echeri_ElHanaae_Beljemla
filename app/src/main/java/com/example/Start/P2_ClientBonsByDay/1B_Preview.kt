@@ -55,7 +55,6 @@ fun ClientBonsByDayScreenPreview(
         ClientBonsByDayScreen(
             state = previewState,
             actions = ClientBonsByDayActions(
-                onClick = {},
                 onAddBon = { newBon ->
                     // Create a preview version of the new bon with an incremented ID
                     val previewBon = newBon.copy(
@@ -66,8 +65,6 @@ fun ClientBonsByDayScreenPreview(
                         clientBonsByDay = previewState.clientBonsByDay + previewBon
                     )
                 },
-                onUpdateBon = {},
-                onDeleteBon = {}
             )
         )
     }

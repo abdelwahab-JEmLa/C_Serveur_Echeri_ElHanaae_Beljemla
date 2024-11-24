@@ -28,13 +28,11 @@ interface ClientBonsByDayDao {
     suspend fun getBonsByDate(date: Date): List<ClientBonsByDay>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBon(bon: ClientBonsByDay)
+    suspend fun upsertBon(bon: ClientBonsByDay)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBons(bons: List<ClientBonsByDay>)
 
-    @Update
-    suspend fun updateBon(bon: ClientBonsByDay)
 
     @Delete
     suspend fun deleteBon(bon: ClientBonsByDay)
