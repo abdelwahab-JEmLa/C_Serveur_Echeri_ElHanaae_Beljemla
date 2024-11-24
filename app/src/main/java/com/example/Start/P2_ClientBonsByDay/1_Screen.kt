@@ -36,12 +36,30 @@ fun ClientBonsByDayScreen(
                 .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            listOf("ID", "Client ID", "Client Name", "Total", "Payed", "Date").forEach { headerText ->
-                GridHeader(
-                    modifier = Modifier.weight(1f),
-                    text = headerText
-                )
-            }
+            GridHeader(
+                modifier = Modifier.weight(0.5f),
+                text = "ID"
+            )
+            GridHeader(
+                modifier = Modifier.weight(0.5f),
+                text = "Client ID"
+            )
+            GridHeader(
+                modifier = Modifier.weight(1f),
+                text = "Client Name"
+            )
+            GridHeader(
+                modifier = Modifier.weight(1f),
+                text = "Total"
+            )
+            GridHeader(
+                modifier = Modifier.weight(1f),
+                text = "Payed"
+            )
+            GridHeader(
+                modifier = Modifier.weight(1f),
+                text = "Date"
+            )
         }
 
         // Data rows
@@ -52,19 +70,33 @@ fun ClientBonsByDayScreen(
                     .padding(vertical = 2.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                listOf(
-                    bon.id.toString(),
-                    bon.idClient.toString(),
-                    bon.nameClient,
-                    "%.2f".format(bon.total),
-                    "%.2f".format(bon.payed),
-                    bon.date
-                ).forEach { cellText ->
-                    GridCell(
-                        modifier = Modifier.weight(1f),
-                        text = cellText
-                    )
-                }
+                // ID column - narrower
+                GridCell(
+                    modifier = Modifier.weight(0.5f),
+                    text = bon.id.toString()
+                )
+                // Client ID column - narrower
+                GridCell(
+                    modifier = Modifier.weight(0.5f),
+                    text = bon.idClient.toString()
+                )
+                // Other columns - normal width
+                GridCell(
+                    modifier = Modifier.weight(1f),
+                    text = bon.nameClient
+                )
+                GridCell(
+                    modifier = Modifier.weight(1f),
+                    text = "%.2f".format(bon.total)
+                )
+                GridCell(
+                    modifier = Modifier.weight(1f),
+                    text = "%.2f".format(bon.payed)
+                )
+                GridCell(
+                    modifier = Modifier.weight(1f),
+                    text = bon.date
+                )
             }
         }
     }
