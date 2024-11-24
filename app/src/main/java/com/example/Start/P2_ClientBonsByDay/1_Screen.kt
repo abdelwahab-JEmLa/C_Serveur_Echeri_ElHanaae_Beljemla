@@ -25,7 +25,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -83,11 +81,9 @@ fun ClientBonsByDayScreen(
         AnimatedFabGroup( )
         if (showDialog) {
             AddBonDialog(
+                clientBonsByDay =state.clientBonsByDay,
+                actions  = actions,
                 onDismiss = { showDialog = false },
-                onAddBon = { newBon ->
-                    actions.onAddBon(newBon)
-                    showDialog = false
-                }
             )
         }
     }
@@ -141,18 +137,18 @@ private fun ClientBonCard(
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = "Date: ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(bon.date)}",
+                text = "Date: ${bon.date}",  // Changed this line
                 style = MaterialTheme.typography.bodyMedium
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBonDialog(
     onDismiss: () -> Unit,
-    onAddBon: (ClientBonsByDay) -> Unit
+    actions: ClientBonsByDayActions,
+    clientBonsByDay: List<ClientBonsByDay>
 ) {
     var nameClient by remember { mutableStateOf("") }
     var payed by remember { mutableStateOf("0") }
@@ -198,14 +194,24 @@ fun AddBonDialog(
             TextButton(
                 onClick = {
                     if (nameClient.isNotBlank()) {
-                        onAddBon(
+                        // Find the maximum ID from existing bons and add 1
+                        val newId = if (clientBonsByDay.isEmpty()) 1L else clientBonsByDay.maxOf { it.id } + 1
+
+                        // Generate current date in the required format
+                        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            .format(java.util.Date())
+
+                        actions.onAddBon(
                             ClientBonsByDay(
+                                id = newId,
+                                idClient = newId, // Using same ID for client ID
                                 nameClient = nameClient,
                                 payed = payed.toLongOrNull() ?: 0,
                                 total = isTotal,
-                                date = Date()
+                                date = currentDate
                             )
                         )
+                        onDismiss()
                     }
                 }
             ) {

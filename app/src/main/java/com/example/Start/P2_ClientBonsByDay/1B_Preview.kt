@@ -28,7 +28,6 @@ class ClientBonsByDayStatePreviewParameterProvider :
                         nameClient = "John Doe",
                         total = true,
                         payed = 1500,
-                        date = Date()
                     ),
                     ClientBonsByDay(
                         id = 2,
@@ -36,7 +35,6 @@ class ClientBonsByDayStatePreviewParameterProvider :
                         nameClient = "Jane Smith",
                         total = false,
                         payed = 2500,
-                        date = Date()
                     )
                 )
             )

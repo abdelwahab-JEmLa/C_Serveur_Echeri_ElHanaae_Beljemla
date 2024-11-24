@@ -6,7 +6,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.ClientBonsByDayDao
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,13 +52,21 @@ class ClientBonsByDayViewModel @Inject constructor(
     fun upsertBon(bon: ClientBonsByDay) {
         viewModelScope.launch {
             try {
+                // Update local Room database
                 clientBonsByDayDao.upsertBon(bon)
-                //-->
-                //Hi Claud,what i went from u to do is to
-                //Find All TODOs and Fix Them 
 
-                //TODO:
-                // ajout un set au fire base
+                // Update Firebase
+                refClientBonsByDay.child(bon.id.toString()).setValue(bon)
+                    .addOnSuccessListener {
+                        // Firebase update successful
+                        _stateFlow.update { it.copy(error = null) }
+                    }
+                    .addOnFailureListener { e ->
+                        // Handle Firebase update failure
+                        val errorMessage = "Firebase update failed: ${e.message}"
+                        _stateFlow.update { it.copy(error = errorMessage) }
+                        savedStateHandle["error"] = errorMessage
+                    }
 
             } catch (e: Exception) {
                 val errorMessage = e.message
@@ -65,25 +76,50 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
-
     fun deleteBon(bon: ClientBonsByDay) {
         viewModelScope.launch {
             try {
+                // Delete from local Room database
                 clientBonsByDayDao.deleteBon(bon)
+
+                // Delete from Firebase
+                refClientBonsByDay.child(bon.id.toString()).removeValue()
+                    .addOnFailureListener { e ->
+                        val errorMessage = "Firebase deletion failed: ${e.message}"
+                        _stateFlow.update { it.copy(error = errorMessage) }
+                    }
             } catch (e: Exception) {
                 _stateFlow.update { it.copy(error = e.message) }
             }
         }
     }
+
     init {
         initializeData()
-        //-->
-        //Hi Claud,what i went from u to do is to
-        //Find All TODOs and Fix Them 
+        setupFirebaseListener()
+    }
 
-        //TODO:
-        // ajoute un on data change de refClientBonsByDay il upsert 
-        // room
+    private fun setupFirebaseListener() {
+        refClientBonsByDay.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                viewModelScope.launch {
+                    try {
+                        snapshot.children.forEach { childSnapshot ->
+                            childSnapshot.getValue(ClientBonsByDay::class.java)?.let { bon ->
+                                // Update Room database with Firebase data
+                                clientBonsByDayDao.upsertBon(bon)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        _stateFlow.update { it.copy(error = "Firebase sync error: ${e.message}") }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                _stateFlow.update { it.copy(error = "Firebase sync cancelled: ${error.message}") }
+            }
+        })
     }
 
     private fun initializeData() {
@@ -106,8 +142,14 @@ class ClientBonsByDayViewModel @Inject constructor(
             }
         }
     }
-    fun retryInitialization() {
-        _stateFlow.value = _stateFlow.value.copy(isLoading = true, error = null)
-        initializeData()
+
+
+    override fun onCleared() {
+        super.onCleared()
+        // Remove Firebase listener when ViewModel is cleared
+        refClientBonsByDay.removeEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {}
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 }

@@ -2,7 +2,6 @@ package com.example.Start.P2_ClientBonsByDay
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
 
 /**
  * UI State that represents ClientBonsByDayScreen
@@ -22,7 +21,7 @@ data class ClientBonsByDay(
     val nameClient: String = "",
     val total: Boolean = false,
     val payed: Long = 0,
-    val date: Date = Date()
+    val date: String = "",
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)

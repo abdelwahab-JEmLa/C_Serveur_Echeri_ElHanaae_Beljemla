@@ -19,12 +19,7 @@ fun MainScreen(appViewModels: AppViewModels) {
         clientBonsByDayState.isLoading -> {
             LoadingScreen()
         }
-        clientBonsByDayState.error != null -> {
-            ErrorScreen(
-                error = clientBonsByDayState.error!!,
-                onRetry = { appViewModels.clientBonsByDayViewModel.retryInitialization() }
-            )
-        }
+
         clientBonsByDayState.isInitialized -> {
             MainContent(modifier = Modifier)
         }
@@ -41,22 +36,7 @@ private fun LoadingScreen() {
     }
 }
 
-@Composable
-private fun ErrorScreen(error: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = error)
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("Retry")
-        }
-    }
-}
+
 
 @Composable
 private fun MainContent(modifier: Modifier) {
