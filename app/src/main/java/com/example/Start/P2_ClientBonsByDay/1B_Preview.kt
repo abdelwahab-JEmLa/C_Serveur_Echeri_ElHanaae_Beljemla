@@ -13,40 +13,44 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 
 
+
 /**
  * PreviewParameter Provider for ClientBonsByDayScreen Preview
  * Provides sample data for the preview
  */
 class ClientBonsByDayStatePreviewParameterProvider :
     PreviewParameterProvider<DaySoldBonsScreen> {
-    override val values: Sequence<DaySoldBonsScreen>
-        get() = sequenceOf(
-            DaySoldBonsScreen(
-                daySoldBonsModel = listOf(
-                    DaySoldBonsModel(
-                        date = "2024-11-24",
-                        id = 1,
-                        idClient = 8,
-                        nameClient = "(Adlen Bananie)",
-                        payed = 7862.4,
-                        total = 7862.4
-                    ),
-                    DaySoldBonsModel(
-                        date = "2024-11-24",
-                        id = 2,
-                        idClient = 1,
-                        nameClient = "(Abderahman Tamaris)",
-                        payed = 11425.4,
-                        total = 11425.4
-                    )
+    override val values: Sequence<DaySoldBonsScreen> = sequenceOf(
+        DaySoldBonsScreen(
+            daySoldBonsModel = listOf(
+                DaySoldBonsModel(
+                    date = "2024-11-24",
+                    id = 1,
+                    idClient = 8,
+                    nameClient = "(Adlen Bananie)",
+                    payed = 7862.4,
+                    total = 7862.4
+                ),
+                DaySoldBonsModel(
+                    date = "2024-11-24",
+                    id = 2,
+                    idClient = 1,
+                    nameClient = "(Abderahman Tamaris)",
+                    payed = 11425.4,
+                    total = 11425.4
                 )
             )
         )
+    )
+
+    // Provide a default value
+    override val count: Int = 1
 }
 
+// Alternative preview using PreviewParameter
 @Preview(showBackground = true)
 @Composable
-fun ClientBonsByDayScreenPreview(
+fun ClientBonsByDayScreenParameterizedPreview(
     @PreviewParameter(ClientBonsByDayStatePreviewParameterProvider::class)
     state: DaySoldBonsScreen
 ) {
