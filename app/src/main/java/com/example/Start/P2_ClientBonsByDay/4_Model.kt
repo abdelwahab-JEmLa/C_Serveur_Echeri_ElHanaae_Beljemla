@@ -6,21 +6,21 @@ import androidx.room.PrimaryKey
 /**
  * UI State that represents ClientBonsByDayScreen
  **/
-data class ClientBonsByDayState(
-    val clientBonsByDay: List<ClientBonsByDay> = emptyList(),
+data class DaySoldBonsScreen(
+    val daySoldBonsModel: List<DaySoldBonsModel> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
     val isInitialized: Boolean = false
 )
 
-@Entity(tableName = "client_bons_by_day")
-data class ClientBonsByDay(
+@Entity
+data class DaySoldBonsModel(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     val idClient: Long = 0,
     val nameClient: String = "",
-    val total: Boolean = false,
-    val payed: Long = 0,
+    val total: Double = 0.0,
+    val payed: Double = 0.0,
     val date: String = "",
 ) {
     // No-argument constructor for Firebase

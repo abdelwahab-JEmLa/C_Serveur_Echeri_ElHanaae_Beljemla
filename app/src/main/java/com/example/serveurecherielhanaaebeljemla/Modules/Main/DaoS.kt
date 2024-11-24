@@ -15,29 +15,25 @@ import androidx.room.Update
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
-import com.example.Start.P2_ClientBonsByDay.ClientBonsByDay
+import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 @Dao
 interface ClientBonsByDayDao {
-    @Query("SELECT * FROM client_bons_by_day ORDER BY date DESC")
-    fun getAllBonsFlow(): Flow<List<ClientBonsByDay>>
-
-    @Query("SELECT * FROM client_bons_by_day WHERE date = :date")
-    suspend fun getBonsByDate(date: Date): List<ClientBonsByDay>
+    @Query("SELECT * FROM DaySoldBonsModel ORDER BY date DESC")
+    fun getAllBonsFlow(): Flow<List<DaySoldBonsModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertBon(bon: ClientBonsByDay)
+    suspend fun upsertBon(bon: DaySoldBonsModel)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBons(bons: List<ClientBonsByDay>)
-
+    suspend fun insertBons(bons: List<DaySoldBonsModel>)
 
     @Delete
-    suspend fun deleteBon(bon: ClientBonsByDay)
+    suspend fun deleteBon(bon: DaySoldBonsModel)
 
-    @Query("DELETE FROM client_bons_by_day")
+    @Query("DELETE FROM DaySoldBonsModel")
     suspend fun deleteAllBons()
 }
 

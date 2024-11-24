@@ -4,7 +4,7 @@ package com.example.serveurecherielhanaaebeljemla.Modules.Main
 import a_RoomDB.*
 import android.content.Context
 import androidx.room.*
-import com.example.Start.P2_ClientBonsByDay.ClientBonsByDay
+import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 import dagger.Module
@@ -25,7 +25,7 @@ import javax.inject.Singleton
         ClientsModel::class,
         AppSettingsSaverModel::class,
         DevicesTypeManager::class,
-        ClientBonsByDay::class
+        DaySoldBonsModel::class
     ],
     version = 1,
     exportSchema = false

@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.Start.P2_ClientBonsByDay.Components.ClientBonsByDayDestination
-import com.example.Start.P2_ClientBonsByDay.Components.ClientBonsByDayRoute
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayDestination
+import com.example.Start.P2_ClientBonsByDay.ClientBonsByDayRoute
 
 @Composable
 fun AppNavHost(

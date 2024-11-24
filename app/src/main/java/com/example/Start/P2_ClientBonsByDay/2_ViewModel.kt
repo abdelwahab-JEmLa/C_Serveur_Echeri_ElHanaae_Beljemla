@@ -24,8 +24,8 @@ import javax.inject.Inject
  **/
 data class ClientBonsByDayActions(
     val onClick: () -> Unit = {},
-    val onAddBon: (ClientBonsByDay) -> Unit = {},
-    val onDeleteBon: (ClientBonsByDay) -> Unit = {}
+    val onAddBon: (DaySoldBonsModel) -> Unit = {},
+    val onDeleteBon: (DaySoldBonsModel) -> Unit = {}
 )
 
 @Composable
@@ -44,19 +44,19 @@ class ClientBonsByDayViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val clientBonsByDayDao: ClientBonsByDayDao
 ) : ViewModel() {
-    private val _stateFlow = MutableStateFlow(ClientBonsByDayState())
-    val state: StateFlow<ClientBonsByDayState> = _stateFlow.asStateFlow()
+    private val _stateFlow = MutableStateFlow(DaySoldBonsScreen())
+    val state: StateFlow<DaySoldBonsScreen> = _stateFlow.asStateFlow()
     private val firebaseDatabase = FirebaseDatabase.getInstance()
-    private val refClientBonsByDay = firebaseDatabase.getReference("1_ClientBonsByDay")
+    private val refDaySoldBons = firebaseDatabase.getReference("1_DaySoldBons")
 
-    fun upsertBon(bon: ClientBonsByDay) {
+    fun upsertBon(bon: DaySoldBonsModel) {
         viewModelScope.launch {
             try {
                 // Update local Room database
                 clientBonsByDayDao.upsertBon(bon)
 
                 // Update Firebase
-                refClientBonsByDay.child(bon.id.toString()).setValue(bon)
+                refDaySoldBons.child(bon.id.toString()).setValue(bon)
                     .addOnSuccessListener {
                         // Firebase update successful
                         _stateFlow.update { it.copy(error = null) }
@@ -76,14 +76,14 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
-    fun deleteBon(bon: ClientBonsByDay) {
+    fun deleteBon(bon: DaySoldBonsModel) {
         viewModelScope.launch {
             try {
                 // Delete from local Room database
                 clientBonsByDayDao.deleteBon(bon)
 
                 // Delete from Firebase
-                refClientBonsByDay.child(bon.id.toString()).removeValue()
+                refDaySoldBons.child(bon.id.toString()).removeValue()
                     .addOnFailureListener { e ->
                         val errorMessage = "Firebase deletion failed: ${e.message}"
                         _stateFlow.update { it.copy(error = errorMessage) }
@@ -100,12 +100,12 @@ class ClientBonsByDayViewModel @Inject constructor(
     }
 
     private fun setupFirebaseListener() {
-        refClientBonsByDay.addValueEventListener(object : ValueEventListener {
+        refDaySoldBons.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 viewModelScope.launch {
                     try {
                         snapshot.children.forEach { childSnapshot ->
-                            childSnapshot.getValue(ClientBonsByDay::class.java)?.let { bon ->
+                            childSnapshot.getValue(DaySoldBonsModel::class.java)?.let { bon ->
                                 // Update Room database with Firebase data
                                 clientBonsByDayDao.upsertBon(bon)
                             }
@@ -127,14 +127,14 @@ class ClientBonsByDayViewModel @Inject constructor(
             try {
                 clientBonsByDayDao.getAllBonsFlow()
                     .collect { bons ->
-                        _stateFlow.value = ClientBonsByDayState(
-                            clientBonsByDay = bons,
+                        _stateFlow.value = DaySoldBonsScreen(
+                            daySoldBonsModel = bons,
                             isLoading = false,
                             isInitialized = true
                         )
                     }
             } catch (e: Exception) {
-                _stateFlow.value = ClientBonsByDayState(
+                _stateFlow.value = DaySoldBonsScreen(
                     isLoading = false,
                     error = e.message,
                     isInitialized = false
@@ -147,7 +147,7 @@ class ClientBonsByDayViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         // Remove Firebase listener when ViewModel is cleared
-        refClientBonsByDay.removeEventListener(object : ValueEventListener {
+        refDaySoldBons.removeEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {}
             override fun onCancelled(error: DatabaseError) {}
         })

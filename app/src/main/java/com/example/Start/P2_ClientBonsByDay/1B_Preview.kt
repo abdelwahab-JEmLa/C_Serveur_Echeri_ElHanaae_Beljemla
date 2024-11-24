@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import java.util.Date
 
 
 /**
@@ -17,24 +16,22 @@ import java.util.Date
  * Add values to the sequence to see the preview in different states
  **/
 class ClientBonsByDayStatePreviewParameterProvider :
-    PreviewParameterProvider<ClientBonsByDayState> {
-    override val values: Sequence<ClientBonsByDayState>
+    PreviewParameterProvider<DaySoldBonsScreen> {
+    override val values: Sequence<DaySoldBonsScreen>
         get() = sequenceOf(
-            ClientBonsByDayState(
-                clientBonsByDay = listOf(
-                    ClientBonsByDay(
+            DaySoldBonsScreen(
+                daySoldBonsModel = listOf(
+                    DaySoldBonsModel(
                         id = 1,
                         idClient = 101,
                         nameClient = "John Doe",
-                        total = true,
-                        payed = 1500,
+
                     ),
-                    ClientBonsByDay(
+                    DaySoldBonsModel(
                         id = 2,
                         idClient = 102,
                         nameClient = "Jane Smith",
-                        total = false,
-                        payed = 2500,
+
                     )
                 )
             )
@@ -45,7 +42,7 @@ class ClientBonsByDayStatePreviewParameterProvider :
 @Composable
 fun ClientBonsByDayScreenPreview(
     @PreviewParameter(ClientBonsByDayStatePreviewParameterProvider::class)
-    state: ClientBonsByDayState
+    state: DaySoldBonsScreen
 ) {
     var previewState by remember { mutableStateOf(state) }
 
@@ -56,11 +53,11 @@ fun ClientBonsByDayScreenPreview(
                 onAddBon = { newBon ->
                     // Create a preview version of the new bon with an incremented ID
                     val previewBon = newBon.copy(
-                        id = (previewState.clientBonsByDay.maxOfOrNull { it.id } ?: 0) + 1
+                        id = (previewState.daySoldBonsModel.maxOfOrNull { it.id } ?: 0) + 1
                     )
                     // Update preview state with new bon
                     previewState = previewState.copy(
-                        clientBonsByDay = previewState.clientBonsByDay + previewBon
+                        daySoldBonsModel = previewState.daySoldBonsModel + previewBon
                     )
                 },
             )

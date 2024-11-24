@@ -5,7 +5,6 @@ plugins {
     id("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
     id("com.google.dagger.hilt.android")
-
 }
 
 android {
@@ -34,27 +33,32 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17  // Updated
-        targetCompatibility = JavaVersion.VERSION_17  // Updated
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "17"  // Updated
+        jvmTarget = "17"
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            // Add exclusion for duplicate XML parser classes
             excludes += "META-INF/xmlpull_1_1_3_1.version"
             excludes += "META-INF/xpp3_min-1.1.4c.version"
         }
     }
+
     sourceSets {
         getByName("main") {
             res.srcDirs(
@@ -65,29 +69,23 @@ android {
             )
         }
     }
-    // Ajoutez ceci dans le bloc android
-    kapt {
-        correctErrorTypes = true
-        arguments {
-            arg("dagger.fastInit", "enabled")
-            arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
-            arg("dagger.hilt.internal.useAggregatingRootProcessor", "true")
-        }
+}
+
+// Top-level kapt configuration
+kapt {
+    correctErrorTypes = true
+    arguments {
+        arg("dagger.hilt.android.internal.disableAndroidSuperclassValidation", "true")
     }
 }
 
 configurations.all {
     resolutionStrategy {
-        // Force using a specific version of xmlpull
         force("xmlpull:xmlpull:1.1.3.1")
-        // Exclude xpp3 from all dependencies
         exclude(group = "xpp3", module = "xpp3")
     }
 }
-// Add this block for kapt configuration
-kapt {
-    correctErrorTypes = true
-}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -112,6 +110,8 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.material)
     implementation(libs.androidx.navigation.safe.args.generator)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -119,29 +119,32 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Serialization
     implementation(libs.kotlinx.serialization.json) {
-        // Exclude conflicting XML parser
         exclude(group = "xmlpull", module = "xmlpull")
         exclude(group = "xpp3", module = "xpp3")
     }
 
+    // Image loading
     implementation(libs.coil.compose)
 
+    // Room
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    // Other utilities
     implementation(libs.kotlin.reflect)
     implementation(libs.androidx.material.icons.extended)
-
     implementation(libs.compose)
     implementation(libs.gson)
     implementation(libs.timber)
 
-    // Update Hilt dependencies
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-
 }
 
 apply(plugin = "com.google.gms.google-services")
