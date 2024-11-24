@@ -11,58 +11,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun ClientBonsByDayScreen(
     state: DaySoldBonsScreen,
     actions: ClientBonsByDayActions
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Headers row
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Headers
+            listOf("ID", "Client ID", "Client Name", "Total", "Payed", "Date").forEach { headerText ->
+                GridHeader(
+                    modifier = Modifier.weight(1f),
+                    text = headerText
+                )
+            }
+        }
+
+        // Data rows
+        state.daySoldBonsModel.forEach { bon ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            ) { //-->
-                //Hi Claud,what i went from u to do is to
-                //Find All TODOs and Fix Them
-
-                //TODO:
-                // utlise une loop ddfait que le heigt 40
-                GridHeader(modifier = Modifier.weight(1f), text = "ID")
-                GridHeader(modifier = Modifier.weight(1f), text = "Client ID")
-                GridHeader(modifier = Modifier.weight(1f), text = "Client Name")
-                GridHeader(modifier = Modifier.weight(1f), text = "Total")
-                GridHeader(modifier = Modifier.weight(1f), text = "Payed")
-                GridHeader(modifier = Modifier.weight(1f), text = "Date")
-            }
-
-            // Data rows
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(6),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(vertical = 2.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(state.daySoldBonsModel) { bon ->//-->
-                    //Hi Claud,what i went from u to do is to
-                    //Find All TODOs and Fix Them
-
-                    //TODO:
-                    // pk il saffichon comme l image
-                    GridCell(text = bon.id.toString())
-                    GridCell(text = bon.idClient.toString())
-                    GridCell(text = bon.nameClient)
-                    GridCell(text = "%.2f".format(bon.total))
-                    GridCell(text = "%.2f".format(bon.payed))
-                    GridCell(text = bon.date)
+                listOf(
+                    bon.id.toString(),
+                    bon.idClient.toString(),
+                    bon.nameClient,
+                    "%.2f".format(bon.total),
+                    "%.2f".format(bon.payed),
+                    bon.date
+                ).forEach { cellText ->
+                    GridCell(
+                        modifier = Modifier.weight(1f),
+                        text = cellText
+                    )
                 }
             }
         }
@@ -76,34 +72,40 @@ private fun GridHeader(
 ) {
     Box(
         modifier = modifier
-            .padding(horizontal = 2.dp)
+            .height(40.dp)
             .border(1.dp, MaterialTheme.colorScheme.primary)
-            .padding(8.dp),
+            .padding(horizontal = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
 
 @Composable
-private fun GridCell(text: String) {
+private fun GridCell(
+    modifier: Modifier = Modifier,
+    text: String
+) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
+            .height(40.dp)
             .border(0.5.dp, Color.LightGray)
-            .padding(8.dp),
+            .padding(horizontal = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
-
