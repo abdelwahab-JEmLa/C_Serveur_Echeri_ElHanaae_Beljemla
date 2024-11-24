@@ -13,8 +13,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 /**
  * PreviewParameter Provider for ClientBonsByDayScreen Preview
- * Add values to the sequence to see the preview in different states
- **/
+ * Provides sample data for the preview
+ */
 class ClientBonsByDayStatePreviewParameterProvider :
     PreviewParameterProvider<DaySoldBonsScreen> {
     override val values: Sequence<DaySoldBonsScreen>
@@ -22,22 +22,26 @@ class ClientBonsByDayStatePreviewParameterProvider :
             DaySoldBonsScreen(
                 daySoldBonsModel = listOf(
                     DaySoldBonsModel(
+                        date = "2024-11-24",
                         id = 1,
-                        idClient = 101,
-                        nameClient = "John Doe",
-
+                        idClient = 8,
+                        nameClient = "(Adlen Bananie)",
+                        payed = 7862.4,
+                        total = 7862.4
                     ),
                     DaySoldBonsModel(
+                        date = "2024-11-24",
                         id = 2,
-                        idClient = 102,
-                        nameClient = "Jane Smith",
-
+                        idClient = 1,
+                        nameClient = "(Abderahman Tamaris)",
+                        payed = 11425.4,
+                        total = 11425.4
                     )
                 )
             )
         )
 }
-// In 4_Model.kt - Fix preview for add functionality
+
 @Preview(showBackground = true)
 @Composable
 fun ClientBonsByDayScreenPreview(
@@ -50,16 +54,7 @@ fun ClientBonsByDayScreenPreview(
         ClientBonsByDayScreen(
             state = previewState,
             actions = ClientBonsByDayActions(
-                onAddBon = { newBon ->
-                    // Create a preview version of the new bon with an incremented ID
-                    val previewBon = newBon.copy(
-                        id = (previewState.daySoldBonsModel.maxOfOrNull { it.id } ?: 0) + 1
-                    )
-                    // Update preview state with new bon
-                    previewState = previewState.copy(
-                        daySoldBonsModel = previewState.daySoldBonsModel + previewBon
-                    )
-                },
+                onAddBon = {}
             )
         )
     }

@@ -24,6 +24,9 @@ interface ClientBonsByDayDao {
     @Query("SELECT * FROM DaySoldBonsModel ORDER BY date DESC")
     fun getAllBonsFlow(): Flow<List<DaySoldBonsModel>>
 
+    @Query("SELECT * FROM DaySoldBonsModel ORDER BY date DESC")
+    suspend fun getAllBons(): List<DaySoldBonsModel>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertBon(bon: DaySoldBonsModel)
 

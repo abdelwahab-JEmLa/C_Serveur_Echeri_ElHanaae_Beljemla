@@ -48,6 +48,7 @@ class ClientBonsByDayViewModel @Inject constructor(
     val state: StateFlow<DaySoldBonsScreen> = _stateFlow.asStateFlow()
     private val firebaseDatabase = FirebaseDatabase.getInstance()
     private val refDaySoldBons = firebaseDatabase.getReference("1_DaySoldBons")
+    private var valueEventListener: ValueEventListener? = null
 
     fun upsertBon(bon: DaySoldBonsModel) {
         viewModelScope.launch {
@@ -58,11 +59,9 @@ class ClientBonsByDayViewModel @Inject constructor(
                 // Update Firebase
                 refDaySoldBons.child(bon.id.toString()).setValue(bon)
                     .addOnSuccessListener {
-                        // Firebase update successful
                         _stateFlow.update { it.copy(error = null) }
                     }
                     .addOnFailureListener { e ->
-                        // Handle Firebase update failure
                         val errorMessage = "Firebase update failed: ${e.message}"
                         _stateFlow.update { it.copy(error = errorMessage) }
                         savedStateHandle["error"] = errorMessage
@@ -100,16 +99,40 @@ class ClientBonsByDayViewModel @Inject constructor(
     }
 
     private fun setupFirebaseListener() {
-        refDaySoldBons.addValueEventListener(object : ValueEventListener {
+        valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 viewModelScope.launch {
                     try {
+                        // Get current local data
+                        val localBons = clientBonsByDayDao.getAllBons()
+                        val localBonsMap = localBons.associateBy { it.id }
+
+                        // Process Firebase data
+                        val firebaseBons = mutableListOf<DaySoldBonsModel>()
                         snapshot.children.forEach { childSnapshot ->
                             childSnapshot.getValue(DaySoldBonsModel::class.java)?.let { bon ->
-                                // Update Room database with Firebase data
-                                clientBonsByDayDao.upsertBon(bon)
+                                firebaseBons.add(bon)
                             }
                         }
+
+                        // Compare and sync data
+                        val firebaseBonsMap = firebaseBons.associateBy { it.id }
+
+                        // Handle updates and additions
+                        firebaseBons.forEach { firebaseBon ->
+                            val localBon = localBonsMap[firebaseBon.id]
+                            if (localBon == null || localBon != firebaseBon) {
+                                clientBonsByDayDao.upsertBon(firebaseBon)
+                            }
+                        }
+
+                        // Handle deletions
+                        localBons.forEach { localBon ->
+                            if (!firebaseBonsMap.containsKey(localBon.id)) {
+                                clientBonsByDayDao.deleteBon(localBon)
+                            }
+                        }
+
                     } catch (e: Exception) {
                         _stateFlow.update { it.copy(error = "Firebase sync error: ${e.message}") }
                     }
@@ -119,7 +142,11 @@ class ClientBonsByDayViewModel @Inject constructor(
             override fun onCancelled(error: DatabaseError) {
                 _stateFlow.update { it.copy(error = "Firebase sync cancelled: ${error.message}") }
             }
-        })
+        }
+
+        valueEventListener?.let {
+            refDaySoldBons.addValueEventListener(it)
+        }
     }
 
     private fun initializeData() {
@@ -143,13 +170,11 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
-
     override fun onCleared() {
         super.onCleared()
         // Remove Firebase listener when ViewModel is cleared
-        refDaySoldBons.removeEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {}
-            override fun onCancelled(error: DatabaseError) {}
-        })
+        valueEventListener?.let {
+            refDaySoldBons.removeEventListener(it)
+        }
     }
 }
