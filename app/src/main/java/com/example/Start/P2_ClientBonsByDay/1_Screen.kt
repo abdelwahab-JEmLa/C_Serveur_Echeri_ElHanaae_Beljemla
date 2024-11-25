@@ -10,6 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableColumn
@@ -28,13 +31,26 @@ fun ClientBonsByDayScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(7.dp)
     ) {
         // Statistics Card
         item {
-            val today = LocalDate.now().toString()
-            val todayStatistics = state.daySoldStatistics.filter { it.dayDate == today }
-            DaySoldStatisticsTabele(todayStatistics)
+            // Get the display statistics date from app settings
+            val statisticsDate by remember(state.appSettingsSaverModel) {
+                mutableStateOf(
+                    state.appSettingsSaverModel
+                        .firstOrNull()
+                        ?.displayStatisticsDate
+                        ?: LocalDate.now().toString()
+                )
+            }
+
+            // Filter statistics based on selected date
+            val dateStatistics = state.daySoldStatistics.filter { it.dayDate == statisticsDate }
+            DaySoldStatisticsTabele(
+                state = dateStatistics,
+                date = statisticsDate
+            )
         }
 
         item {
@@ -91,8 +107,12 @@ private fun BuyBonTable(state: DaySoldBonsScreen) {
         )
     }
 }
+
 @Composable
-private fun DaySoldStatisticsTabele(state: List<DaySoldStatistics>) {
+private fun DaySoldStatisticsTabele(
+    state: List<DaySoldStatistics>,
+    date: String
+) {
     val columns = listOf(
         TableColumn<DaySoldStatistics>(
             title = "Date",
@@ -118,14 +138,14 @@ private fun DaySoldStatisticsTabele(state: List<DaySoldStatistics>) {
             .padding(16.dp)
     ) {
         Text(
-            text = "Statistiques journalières",
+            text = "Statistiques journalières pour le $date",
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(bottom = 4.dp)
         )
 
         if (state.isEmpty()) {
             Text(
-                text = "Aucune statistique disponible pour aujourd'hui",
+                text = "Aucune statistique disponible pour cette date",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -141,7 +161,7 @@ private fun DaySoldStatisticsTabele(state: List<DaySoldStatistics>) {
 @Composable
 private fun ClientTable(state: DaySoldBonsScreen) {
     val columns = listOf(
-       TableColumn<DaySoldBonsModel>(
+        TableColumn<DaySoldBonsModel>(
             title = "Client ID",
             weight = 0.5f
         ) { it.idClient.toString() },
@@ -153,7 +173,6 @@ private fun ClientTable(state: DaySoldBonsScreen) {
             title = "Total",
             weight = 1f
         ) { "%.2f".format(it.total) },
-
     )
 
     TableGrid(

@@ -22,9 +22,8 @@ data class DaySoldBonsScreen(
 data class AppSettingsSaverModel(
     @PrimaryKey var id: Long = 0,
     val name: String = "",
-    val valueBoolean: Boolean = false,
-    val valueLong: Long = 0,
     val dateForNewEntries: String = "", //yyyy-mm-dd
+    val displayStatisticsDate: String = "", //yyyy-mm-dd
 ) {
     // No-argument constructor for Firebase
     constructor() : this(0)

@@ -30,9 +30,11 @@ import javax.inject.Inject
 /**
  * Actions UI pour ClientBonsByDay
  */
+// In ClientBonsByDayActions:
 data class ClientBonsByDayActions(
     val onClick: () -> Unit = {},
-    val onDateSelected: (String) -> Unit = {}
+    val onDateSelected: (String) -> Unit = {},
+    val onStatisticsDateSelected: (String) -> Unit = {}
 )
 
 @Composable
@@ -40,10 +42,12 @@ fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientB
     return remember(viewModel) {
         ClientBonsByDayActions(
             onClick = {},
-            onDateSelected = { viewModel.updateAppSettingsDate(it) }
+            onDateSelected = { viewModel.updateAppSettingsDate(it) },
+            onStatisticsDateSelected = { viewModel.updateStatisticsDate(it) }
         )
     }
 }
+
 
 @HiltViewModel
 class ClientBonsByDayViewModel @Inject constructor(
@@ -70,7 +74,38 @@ class ClientBonsByDayViewModel @Inject constructor(
     private var appSettingsSaverModelListener: ValueEventListener? = null
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    // In ClientBonsByDayViewModel, add this new function:
+    fun updateStatisticsDate(date: String) {
+        viewModelScope.launch {
+            try {
+                // Get current settings
+                val currentSettings = appSettingsSaverModelDao.getAll().firstOrNull()
 
+                // Create new or update existing settings
+                val updatedSettings = currentSettings?.copy(
+                    displayStatisticsDate = date
+                ) ?: AppSettingsSaverModel(
+                    id = 1,
+                    displayStatisticsDate = date
+                )
+
+                // Update local database
+                appSettingsSaverModelDao.upsert(updatedSettings)
+
+                // Update Firebase
+                refAppSettingsSaverModel.child(updatedSettings.id.toString()).setValue(updatedSettings)
+
+                // Update UI state
+                _stateFlow.update { currentState ->
+                    currentState.copy(
+                        appSettingsSaverModel = listOf(updatedSettings)
+                    )
+                }
+            } catch (e: Exception) {
+                _stateFlow.update { it.copy(error = "Error updating statistics date: ${e.message}") }
+            }
+        }
+    }
     fun updateAppSettingsDate(date: String) {
         viewModelScope.launch {
             try {
@@ -134,9 +169,6 @@ class ClientBonsByDayViewModel @Inject constructor(
             _stateFlow.update { it.copy(error = "Erreur mise à jour statistiques: ${e.message}") }
         }
     }
-
-
-
 
     /**
      * Configure l'écouteur Firebase
