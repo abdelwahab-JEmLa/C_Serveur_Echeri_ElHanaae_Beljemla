@@ -8,7 +8,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
-import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 
 
 /**
@@ -54,20 +53,6 @@ fun ClientBonsByDayScreenParameterizedPreview(
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
-            ClientBonsByDayScreen(
-                state = state.copy(
-                    daySoldStatistics = listOf(
-                        DaySoldStatistics(
-                            vid = 1,
-                            dayDate = "2024-11-24",
-                            totalInDay = 19287.8,
-                            payedInDay = 18500.0
-                        )
-                    )
-                ),
-                actions = ClientBonsByDayActions(
-                )
-            )
         }
     }
 }

@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
  **/
 data class DaySoldBonsScreen(
     val daySoldBonsModel: List<DaySoldBonsModel> = emptyList(),
-    val daySoldStatistics: List<DaySoldStatistics> = emptyList(),
     val buyBonModel: List<BuyBonModel> = emptyList(),
     val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
 
@@ -28,14 +27,7 @@ data class AppSettingsSaverModel(
     // No-argument constructor for Firebase
     constructor() : this(0)
 }
-@Entity
-data class DaySoldStatistics(
-    @PrimaryKey(autoGenerate = true)
-    var vid: Long = 0,
-    val dayDate: String = "",
-    val totalInDay: Double = 0.0,
-    val payedInDay: Double = 0.0,
-    )
+
 
 @Entity
 data class DaySoldBonsModel(

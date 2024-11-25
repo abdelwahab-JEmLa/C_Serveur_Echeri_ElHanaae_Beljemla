@@ -20,7 +20,6 @@ import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableGrid
 import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
-import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 import java.time.LocalDate
 
 @Composable
@@ -46,10 +45,9 @@ fun ClientBonsByDayScreen(
             }
 
             // Filter statistics based on selected date
-            val dateStatistics = state.daySoldStatistics.filter { it.dayDate == statisticsDate }
             DaySoldStatisticsTabele(
-                state = dateStatistics,
-                date = statisticsDate
+                state = state,
+                dateStatistics = statisticsDate
             )
         }
 
@@ -128,28 +126,53 @@ private fun BuyBonTable(state: List<BuyBonModel>) {
     }
 }
 
+// First, let's create a data class to hold our statistics
+data class DayStatistics(
+    val date: String,
+    val totalSold: Double,
+    val totalBuy: Double,
+    val profit: Double
+)
+
 @Composable
 private fun DaySoldStatisticsTabele(
-    state: List<DaySoldStatistics>,
-    date: String
+    state: DaySoldBonsScreen,
+    dateStatistics: String
 ) {
+    // Calculate statistics for the given date
+    val statistics = DayStatistics(
+        date = dateStatistics,
+        totalSold = state.daySoldBonsModel
+            .filter { it.date == dateStatistics }
+            .sumOf { it.total },
+        totalBuy = state.buyBonModel
+            .filter { it.date == dateStatistics }
+            .sumOf { it.total },
+        profit = state.daySoldBonsModel
+            .filter { it.date == dateStatistics }
+            .sumOf { it.total } -
+                state.buyBonModel
+                    .filter { it.date == dateStatistics }
+                    .sumOf { it.total }
+    )
+
     val columns = listOf(
-        TableColumn<DaySoldStatistics>(
+        TableColumn<DayStatistics>(
             title = "Date",
             weight = 1f
-        ) { it.dayDate },
-        TableColumn<DaySoldStatistics>(
-            title = "Total du jour",
+        ) { it.date },
+        TableColumn<DayStatistics>(
+            title = "Total Sold du jour",
             weight = 1f
-        ) { "%.2f".format(it.totalInDay) },
-        TableColumn<DaySoldStatistics>(
-            title = "Payé du jour",
+        ) { "%.2f".format(it.totalSold) },
+        TableColumn<DayStatistics>(
+            title = "T Buy",
             weight = 1f
-        ) { "%.2f".format(it.payedInDay) },
-        TableColumn<DaySoldStatistics>(
-            title = "Reste à payer",
+        ) { "%.2f".format(it.totalBuy) },
+        TableColumn<DayStatistics>(
+            title = "Benifice",
             weight = 1f
-        ) { "%.2f".format(it.totalInDay - it.payedInDay) }
+        ) { "%.2f".format(it.profit) }
     )
 
     Column(
@@ -158,39 +181,19 @@ private fun DaySoldStatisticsTabele(
             .padding(16.dp)
     ) {
         Text(
-            text = "Statistiques journalières pour le $date",
+            text = "Statistiques journalières pour le $dateStatistics",
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(bottom = 4.dp)
         )
 
-        if (state.isEmpty()) {
-            // Enhanced empty state handling
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = "Aucune statistique disponible pour cette date",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Les statistiques seront calculées automatiquement lors des nouvelles transactions",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-        } else {
-            TableGrid(
-                items = state,
-                columns = columns
-            )
-        }
+        TableGrid(
+            items = listOf(statistics),  // Pass a list containing our single statistics object
+            columns = columns
+        )
     }
 }
 @Composable
-private fun ClientTable(state: List<DaySoldBonsModel>) {
+ fun ClientTable(state: List<DaySoldBonsModel>) {
     val columns = listOf(
         TableColumn<DaySoldBonsModel>(
             title = "Client ID",

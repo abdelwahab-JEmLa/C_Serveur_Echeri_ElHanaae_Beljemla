@@ -6,7 +6,6 @@ import android.content.Context
 import androidx.room.*
 import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
-import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 import dagger.Module
@@ -36,7 +35,6 @@ class DateConverter {
         ClientsModel::class,
         DevicesTypeManager::class,
         DaySoldBonsModel::class  ,
-        DaySoldStatistics::class,
         BuyBonModel::class,
         AppSettingsSaverModel::class,
 
@@ -54,7 +52,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsSaverModelDao(): AppSettingsSaverModelDao
     abstract fun devicesTypeManagerDao(): DevicesTypeManagerDao
     abstract fun clientBonsByDayDao(): ClientBonsByDayDao
-    abstract fun daySoldStatisticsDao(): DaySoldStatisticsDao
     abstract fun buyBonDao(): BuyBonModelDao
 
 
@@ -109,9 +106,6 @@ object DatabaseModule {
     @Singleton
     fun provideDevicesTypeManagerDao(db: AppDatabase) = db.devicesTypeManagerDao()
 
-    @Provides
-    @Singleton
-    fun provideDaySoldStatisticsDao(db: AppDatabase) = db.daySoldStatisticsDao()
 
     @Provides
     @Singleton
@@ -131,7 +125,6 @@ class DatabaseRepository @Inject constructor(
     private val clientsModelDao: ClientsModelDao,
     private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
     private val devicesTypeManagerDao: DevicesTypeManagerDao ,
-    private val daySoldStatisticsDao: DaySoldStatisticsDao ,
     private val buyBonDao: BuyBonModelDao
 
 
@@ -145,7 +138,6 @@ class DatabaseRepository @Inject constructor(
         clientsModelDao,
         appSettingsSaverModelDao,
         devicesTypeManagerDao,
-        daySoldStatisticsDao  ,
         buyBonDao ,
 
     )

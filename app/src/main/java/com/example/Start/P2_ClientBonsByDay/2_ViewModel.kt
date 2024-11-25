@@ -8,11 +8,9 @@ import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
-import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.AppSettingsSaverModelDao
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.BuyBonModelDao
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.ClientBonsByDayDao
-import com.example.serveurecherielhanaaebeljemla.Modules.Main.DaySoldStatisticsDao
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -23,7 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -52,7 +49,6 @@ fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientB
 @HiltViewModel
 class ClientBonsByDayViewModel @Inject constructor(
     private val clientBonsByDayDao: ClientBonsByDayDao,
-    private val daySoldStatisticsDao: DaySoldStatisticsDao,
     private val buyBonModelDao: BuyBonModelDao,
     private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
 
@@ -101,7 +97,6 @@ class ClientBonsByDayViewModel @Inject constructor(
                         appSettingsSaverModel = listOf(updatedSettings)
                     )
                 }
-                updateDailyStatistics(_stateFlow.value.daySoldBonsModel,date)
             } catch (e: Exception) {
                 _stateFlow.update { it.copy(error = "Error updating statistics date: ${e.message}") }
             }
@@ -138,55 +133,7 @@ class ClientBonsByDayViewModel @Inject constructor(
             }
         }
     }
-    /**
-     * Met à jour les statistiques quotidiennes
-     */
 
-    private suspend fun updateDailyStatistics(daySoldBons: List<DaySoldBonsModel>, selectedDate: String) {
-        try {
-            val today = LocalDate.now().format(dateFormatter)
-
-            val dateToUse = when {
-                selectedDate.isNotEmpty() -> selectedDate
-                else -> {
-                    val currentSettings = appSettingsSaverModelDao.getAll().firstOrNull()
-                    currentSettings?.displayStatisticsDate ?: today
-                }
-            }
-
-            // Calculate totals for the selected date
-            val selectedDateBons = daySoldBons.filter { it.date == dateToUse }
-            val totalInDay = selectedDateBons.sumOf { it.total }
-            val payedInDay = selectedDateBons.sumOf { it.payed }
-
-            // Create or update statistics for the selected date
-            val statistics = DaySoldStatistics(
-                dayDate = dateToUse,
-                totalInDay = totalInDay,
-                payedInDay = payedInDay
-            )
-
-            // Update local database
-            val existingStats = daySoldStatisticsDao.getStatisticsByDate(dateToUse)
-            if (existingStats != null) {
-                statistics.vid = existingStats.vid
-            }
-            daySoldStatisticsDao.upsert(statistics)
-
-            // Update Firebase
-            refDaySoldStatistics.child(dateToUse).setValue(statistics)
-
-            // Update UI state to ensure statistics are shown
-            _stateFlow.update { currentState ->
-                currentState.copy(
-                    daySoldStatistics = listOf(statistics) +
-                            currentState.daySoldStatistics.filter { it.dayDate != dateToUse }
-                )
-            }
-        } catch (e: Exception) {
-            _stateFlow.update { it.copy(error = "Erreur mise à jour statistiques: ${e.message}") }
-        }
-    }
     /**
      * Configure l'écouteur Firebase
      */
@@ -215,8 +162,6 @@ class ClientBonsByDayViewModel @Inject constructor(
                 // Collecteurs séparés pour les bons et les statistiques
                 launch {
                     clientBonsByDayDao.getAllBonsFlow().collect { bons ->
-                        // Mise à jour des statistiques
-                        updateDailyStatistics(bons, "")
 
                         // Mise à jour de l'état
                         _stateFlow.update { currentState ->
@@ -229,18 +174,7 @@ class ClientBonsByDayViewModel @Inject constructor(
                     }
                 }
 
-                // Collecteur pour les statistiques
-                launch {
-                    daySoldStatisticsDao.getAllFlow().collect { statistics ->
-                        _stateFlow.update { currentState ->
-                            currentState.copy(
-                                daySoldStatistics = statistics,
-                                isLoading = false,
-                                isInitialized = true
-                            )
-                        }
-                    }
-                }
+
                 // Collecteur pour les statistiques
                 launch {
                     buyBonModelDao.getAllFlow().collect { buyBonModel ->
