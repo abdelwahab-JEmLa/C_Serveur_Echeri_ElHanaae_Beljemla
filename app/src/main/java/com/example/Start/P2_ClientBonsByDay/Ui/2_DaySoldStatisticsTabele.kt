@@ -18,7 +18,6 @@ fun DaySoldStatisticsTabele(
 ) {
     // Calculate statistics for the given date
     val statistics = DayStatistics(
-        date = dateStatistics,
         totalSold = state.daySoldBonsModel
             .filter { it.date == dateStatistics }
             .sumOf { it.total },
@@ -34,10 +33,7 @@ fun DaySoldStatisticsTabele(
     )
 
     val columns = listOf(
-        TableColumn<DayStatistics>(
-            title = "Date",
-            weight = 1f
-        ) { it.date },
+
         TableColumn<DayStatistics>(
             title = "Total Sold du jour",
             weight = 1f
@@ -57,11 +53,7 @@ fun DaySoldStatisticsTabele(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Statistiques journalières pour le $dateStatistics",
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+
 
         TableGrid(
             items = listOf(statistics),  // Pass a list containing our single statistics object
@@ -71,7 +63,6 @@ fun DaySoldStatisticsTabele(
 }
 // First, let's create a data class to hold our statistics
 private data class DayStatistics(
-    val date: String,
     val totalSold: Double,
     val totalBuy: Double,
     val profit: Double

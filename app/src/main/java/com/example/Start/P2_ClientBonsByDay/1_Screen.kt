@@ -36,6 +36,12 @@ fun ClientBonsByDayScreen(
                 ?: LocalDate.now().toString()
         )
     }
+    val filteredClientBons = state.daySoldBonsModel.filter {
+        it.date == statisticsDate
+    }
+    val filteredBuyBons = state.buyBonModel.filter {
+        it.date == statisticsDate
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -67,10 +73,6 @@ fun ClientBonsByDayScreen(
 
                 // Client Table with filtering
                 item {
-                    val filteredClientBons = state.daySoldBonsModel.filter {
-                        it.date == statisticsDate
-                    }
-
                     ClientTable(filteredClientBons)
                 }
 
@@ -80,16 +82,6 @@ fun ClientBonsByDayScreen(
 
                 // Buy Bon Table with filtering
                 item {
-                    val statisticsDate = state.appSettingsSaverModel
-                        .firstOrNull()
-                        ?.displayStatisticsDate
-                        ?: LocalDate.now().toString()
-
-                    // Filter buy bons by date
-                    val filteredBuyBons = state.buyBonModel.filter {
-                        it.date == statisticsDate
-                    }
-
                     BuyBonTable(filteredBuyBons)
                 }
             }
