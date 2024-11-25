@@ -108,7 +108,7 @@ private fun GridHeader(
         ) {
             AutoResizedText(
                 text = text,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodySmall,
                 maxLines = 2,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
