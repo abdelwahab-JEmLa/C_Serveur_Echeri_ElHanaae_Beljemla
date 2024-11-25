@@ -1,12 +1,18 @@
 package com.example.Start.P2_ClientBonsByDay.Ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -54,7 +60,6 @@ fun DateDefiner(
     uiState: DaySoldBonsScreen,
     actions: ClientBonsByDayActions
 ) {
-    // Safely initialize dates with proper null handling
     var selectedDate by remember(uiState.appSettingsSaverModel) {
         val savedDate = try {
             uiState.appSettingsSaverModel
@@ -85,85 +90,38 @@ fun DateDefiner(
     var showStatsDateDialog by remember { mutableStateOf(false) }
     var isStatsDateSelection by remember { mutableStateOf(false) }
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .height(120.dp)  // Fixed height for the container
+            .padding(horizontal = 16.dp)
     ) {
-        // Entry Date Card
-        ElevatedCard(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(vertical = 8.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        append("Entry Date: ${selectedDate.format(DateTimeFormatter.ISO_DATE)}")
-                        append("  ")
-                        withStyle(MaterialTheme.typography.labelMedium.toSpanStyle()) {
-                            append(arabicDayNames[selectedDate.dayOfWeek.toString()] ?: "")
+            items(listOf(
+                "Statistics Date" to selectedStatsDate,
+                "Entry Date" to selectedDate
+            )) { (title, date) ->
+                DateCard(
+                    title = title,
+                    date = date,
+                    onDateClick = {
+                        isStatsDateSelection = title == "Statistics Date"
+                        if (isStatsDateSelection) {
+                            showStatsDateDialog = true
+                        } else {
+                            showDateDialog = true
                         }
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
+                    }
                 )
-
-                IconButton(onClick = {
-                    isStatsDateSelection = false
-                    showDateDialog = true
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select Entry Date"
-                    )
-                }
-            }
-        }
-
-        // Statistics Date Card
-        ElevatedCard(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        append("Statistics Date: ${selectedStatsDate.format(DateTimeFormatter.ISO_DATE)}")
-                        append("  ")
-                        withStyle(MaterialTheme.typography.labelMedium.toSpanStyle()) {
-                            append(arabicDayNames[selectedStatsDate.dayOfWeek.toString()] ?: "")
-                        }
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-
-                IconButton(onClick = {
-                    isStatsDateSelection = true
-                    showStatsDateDialog = true
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select Statistics Date"
-                    )
-                }
             }
         }
     }
 
+    // Dialog handling remains the same
     if (showDateDialog || showStatsDateDialog) {
         DateSelectionDialog(
             onDismiss = {
@@ -185,6 +143,65 @@ fun DateDefiner(
     }
 }
 
+@Composable
+private fun DateCard(
+    title: String,
+    date: LocalDate,
+    onDateClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ElevatedCard(
+        modifier = modifier
+            .width(250.dp)  // Fixed width for each card
+            .height(100.dp), // Fixed height for each card
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()  // Fill the card's fixed size
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Title
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+
+                // Date and Arabic day
+                Text(
+                    text = buildAnnotatedString {
+                        append(date.format(DateTimeFormatter.ISO_DATE))
+                        append("  ")
+                        withStyle(MaterialTheme.typography.labelMedium.toSpanStyle()) {
+                            append(arabicDayNames[date.dayOfWeek.toString()] ?: "")
+                        }
+                    },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            IconButton(
+                onClick = onDateClick,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Select $title",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun DateSelectionDialog(

@@ -47,7 +47,6 @@ fun ClientBonsByDayRoute(
                 actions
             )
         }
-        
 
         // FAB and Dialog container
         Column(
@@ -61,7 +60,5 @@ fun ClientBonsByDayRoute(
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
-
-
     }
 }
