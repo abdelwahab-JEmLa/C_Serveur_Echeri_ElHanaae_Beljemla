@@ -2,9 +2,14 @@ package com.example.Start.P2_ClientBonsByDay
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
+import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
+import com.example.serveurecherielhanaaebeljemla.Modules.Main.AppSettingsSaverModelDao
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.BuyBonModelDao
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.ClientBonsByDayDao
 import com.example.serveurecherielhanaaebeljemla.Modules.Main.DaySoldStatisticsDao
@@ -27,14 +32,16 @@ import javax.inject.Inject
  */
 data class ClientBonsByDayActions(
     val onClick: () -> Unit = {},
-  )
+    val onDateSelected: (String) -> Unit = {}
+)
 
 @Composable
 fun rememberClientBonsByDayActions(viewModel: ClientBonsByDayViewModel): ClientBonsByDayActions {
     return remember(viewModel) {
         ClientBonsByDayActions(
             onClick = {},
-            )
+            onDateSelected = { viewModel.updateAppSettingsDate(it) }
+        )
     }
 }
 
@@ -43,6 +50,7 @@ class ClientBonsByDayViewModel @Inject constructor(
     private val clientBonsByDayDao: ClientBonsByDayDao,
     private val daySoldStatisticsDao: DaySoldStatisticsDao,
     private val buyBonModelDao: BuyBonModelDao,
+    private val appSettingsSaverModelDao: AppSettingsSaverModelDao,
 
     ) : ViewModel() {
 
@@ -55,15 +63,45 @@ class ClientBonsByDayViewModel @Inject constructor(
     private val refDaySoldBons = firebaseDatabase.getReference("1_DaySoldBons")
     private val refDaySoldStatistics = firebaseDatabase.getReference("1B_DaySoldStatistics")
     private val refBuyBon = firebaseDatabase.getReference("1C_BuyBon")
+    private val refAppSettingsSaverModel = firebaseDatabase.getReference("2_AppSettingsSaverNew")
+
     private var daySoldBonsListener: ValueEventListener? = null
     private var buyBonListener: ValueEventListener? = null
+    private var appSettingsSaverModelListener: ValueEventListener? = null
+
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    init {
-        initializeData()
-        setupFirebaseListeners()
-    }
+    fun updateAppSettingsDate(date: String) {
+        viewModelScope.launch {
+            try {
+                // Get current settings
+                val currentSettings = appSettingsSaverModelDao.getAll().firstOrNull()
 
+                // Create new or update existing settings
+                val updatedSettings = currentSettings?.copy(
+                    dateForNewEntries = date
+                ) ?: AppSettingsSaverModel(
+                    id = 1,
+                    dateForNewEntries = date
+                )
+
+                // Update local database
+                appSettingsSaverModelDao.upsert(updatedSettings)
+
+                // Update Firebase
+                refAppSettingsSaverModel.child(updatedSettings.id.toString()).setValue(updatedSettings)
+
+                // Update UI state
+                _stateFlow.update { currentState ->
+                    currentState.copy(
+                        appSettingsSaverModel = listOf(updatedSettings)
+                    )
+                }
+            } catch (e: Exception) {
+                _stateFlow.update { it.copy(error = "Error updating date: ${e.message}") }
+            }
+        }
+    }
     /**
      * Met à jour les statistiques quotidiennes
      */
@@ -99,12 +137,32 @@ class ClientBonsByDayViewModel @Inject constructor(
 
 
 
+
+    /**
+     * Configure l'écouteur Firebase
+     */
+    init {
+        initializeData()
+        setupFirebaseListeners()
+    }
     /**
      * Initialise les données
      */
     private fun initializeData() {
         viewModelScope.launch {
             try {
+                // Collecteur AppSettingsSaverModel
+                launch {
+                    appSettingsSaverModelDao.getAllFlow().collect { appSettingsSaverModel ->
+                        _stateFlow.update { currentState ->
+                            currentState.copy(
+                                appSettingsSaverModel = appSettingsSaverModel,
+                                isLoading = false,
+                                isInitialized = true
+                            )
+                        }
+                    }
+                }
                 // Collecteurs séparés pour les bons et les statistiques
                 launch {
                     clientBonsByDayDao.getAllBonsFlow().collect { bons ->
@@ -146,7 +204,7 @@ class ClientBonsByDayViewModel @Inject constructor(
                         }
                     }
                 }
-                
+
             } catch (e: Exception) {
                 _stateFlow.update {
                     it.copy(
@@ -159,12 +217,61 @@ class ClientBonsByDayViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Configure l'écouteur Firebase
-     */
     private fun setupFirebaseListeners() {
         setupDaySoldBonsListener()
         setupBuyBonListener()
+        setupAppSettingsSaverModel()
+
+    }
+    private fun setupAppSettingsSaverModel() {
+        appSettingsSaverModelListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                viewModelScope.launch {
+                    try {
+                        // Get local data
+                        val localDatas = appSettingsSaverModelDao.getAll()
+                        val localDatasMap = localDatas.associateBy { it.id }
+
+                        // Process Firebase data
+                        val firebaseData = mutableListOf<AppSettingsSaverModel>()
+                        snapshot.children.forEach { childSnapshot ->
+                            childSnapshot.getValue(AppSettingsSaverModel::class.java)?.let {
+                                    firebaseData.add(it)
+                            }
+                        }
+
+                        // Compare and synchronize
+                        val firebaseBuyBonsMap = firebaseData.associateBy { it.id }
+
+                        // Handle updates and additions
+                        firebaseData.forEach { 
+                            val localData = localDatasMap[it.id]
+                            if (localData == null || localData != it) {
+                                appSettingsSaverModelDao.upsert(it)
+                            }
+                        }
+
+                        // Handle deletions
+                        localDatas.forEach { 
+                            if (!firebaseBuyBonsMap.containsKey(it.id)) {
+                                appSettingsSaverModelDao.delete(it)
+                            }
+                        }
+
+                    } catch (e: Exception) {
+                        _stateFlow.update { it.copy(error = "Erreur sync Firebase BuyBon: ${e.message}") }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                _stateFlow.update { it.copy(error = "Sync Firebase BuyBon annulée: ${error.message}") }
+            }
+        }
+
+        buyBonListener?.let {
+            refBuyBon.addValueEventListener(it)
+        }
     }
 
     private fun setupDaySoldBonsListener() {

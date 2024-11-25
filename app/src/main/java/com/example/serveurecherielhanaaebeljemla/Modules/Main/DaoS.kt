@@ -12,13 +12,35 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.Start.P2_ClientBonsByDay.BuyBonModel
+import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 
-import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
-import com.example.Start.P2_ClientBonsByDay.DaySoldStatistics
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface AppSettingsSaverModelDao {
+    @Query("SELECT * FROM AppSettingsSaverModel")
+    fun getAllFlow(): Flow<List<AppSettingsSaverModel>>
+
+    @Query("SELECT * FROM AppSettingsSaverModel")
+    suspend fun getAll(): List<AppSettingsSaverModel>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(item: AppSettingsSaverModel)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(list: List<AppSettingsSaverModel>)
+
+    @Delete
+    suspend fun delete(item: AppSettingsSaverModel)
+
+    @Query("DELETE FROM AppSettingsSaverModel")
+    suspend fun deleteAll()
+
+}
 
 @Dao
 interface BuyBonModelDao {
@@ -195,18 +217,7 @@ interface ClientsModelDao{
 }
 
 
-@Dao
-interface AppSettingsSaverModelDao{
-    @Query("SELECT * FROM AppSettingsSaverModel ORDER BY id")
-    suspend fun getAll(): MutableList<AppSettingsSaverModel>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: AppSettingsSaverModel)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<AppSettingsSaverModel>)
-
-}
 @Dao
 interface DevicesTypeManagerDao{
     @Query("SELECT * FROM DevicesTypeManager ORDER BY id")

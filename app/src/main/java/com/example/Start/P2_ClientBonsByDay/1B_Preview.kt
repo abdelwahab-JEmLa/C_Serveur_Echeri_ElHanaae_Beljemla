@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 
 
 /**

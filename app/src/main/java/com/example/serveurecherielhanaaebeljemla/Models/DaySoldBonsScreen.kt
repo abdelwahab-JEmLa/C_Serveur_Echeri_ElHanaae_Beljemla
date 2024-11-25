@@ -1,4 +1,4 @@
-package com.example.Start.P2_ClientBonsByDay
+package com.example.serveurecherielhanaaebeljemla.Models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,11 +10,25 @@ data class DaySoldBonsScreen(
     val daySoldBonsModel: List<DaySoldBonsModel> = emptyList(),
     val daySoldStatistics: List<DaySoldStatistics> = emptyList(),
     val buyBonModel: List<BuyBonModel> = emptyList(),
+    val appSettingsSaverModel: List<AppSettingsSaverModel> = emptyList(),
 
     val isLoading: Boolean = true,
     val error: String? = null,
     val isInitialized: Boolean = false
 )
+
+// AppSettingsSaverModel.kt
+@Entity
+data class AppSettingsSaverModel(
+    @PrimaryKey var id: Long = 0,
+    val name: String = "",
+    val valueBoolean: Boolean = false,
+    val valueLong: Long = 0,
+    val dateForNewEntries: String = "", //yyyy-mm-dd
+) {
+    // No-argument constructor for Firebase
+    constructor() : this(0)
+}
 @Entity
 data class DaySoldStatistics(
     @PrimaryKey(autoGenerate = true)
@@ -50,6 +64,5 @@ data class BuyBonModel(
     // No-argument constructor for Firebase
     constructor() : this(0)
 }
-
 
 

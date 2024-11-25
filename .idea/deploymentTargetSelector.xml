@@ -17,6 +17,9 @@
       <SelectionState runConfigName="ClientBonsByDayScreenParameterizedPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="PreviewDateDefiner">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

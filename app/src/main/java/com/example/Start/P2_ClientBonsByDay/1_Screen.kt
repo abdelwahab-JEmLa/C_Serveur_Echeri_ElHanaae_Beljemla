@@ -14,6 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableColumn
 import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableGrid
+import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 import java.time.LocalDate
 
 @Composable
@@ -68,14 +72,6 @@ private fun BuyBonTable(state: DaySoldBonsScreen) {
 
         val columns = listOf(
             TableColumn<BuyBonModel>(
-                title = "ID",
-                weight = 0.5f
-            ) { it.vid.toString() },
-            TableColumn<BuyBonModel>(
-                title = "Date",
-                weight = 1f
-            ) { it.date },
-            TableColumn<BuyBonModel>(
                 title = "Fournisseur ID",
                 weight = 0.5f
             ) { it.idSupplier.toString() },
@@ -87,14 +83,6 @@ private fun BuyBonTable(state: DaySoldBonsScreen) {
                 title = "Total",
                 weight = 1f
             ) { "%.2f".format(it.total) },
-            TableColumn<BuyBonModel>(
-                title = "Payé",
-                weight = 1f
-            ) { "%.2f".format(it.payed) },
-            TableColumn<BuyBonModel>(
-                title = "Reste",
-                weight = 1f
-            ) { "%.2f".format(it.total - it.payed) }
         )
 
         TableGrid(
@@ -153,11 +141,7 @@ private fun DaySoldStatisticsTabele(state: List<DaySoldStatistics>) {
 @Composable
 private fun ClientTable(state: DaySoldBonsScreen) {
     val columns = listOf(
-        TableColumn<DaySoldBonsModel>(
-            title = "ID",
-            weight = 0.5f
-        ) { it.id.toString() },
-        TableColumn<DaySoldBonsModel>(
+       TableColumn<DaySoldBonsModel>(
             title = "Client ID",
             weight = 0.5f
         ) { it.idClient.toString() },
@@ -169,14 +153,7 @@ private fun ClientTable(state: DaySoldBonsScreen) {
             title = "Total",
             weight = 1f
         ) { "%.2f".format(it.total) },
-        TableColumn<DaySoldBonsModel>(
-            title = "Payed",
-            weight = 1f
-        ) { "%.2f".format(it.payed) },
-        TableColumn<DaySoldBonsModel>(
-            title = "Date",
-            weight = 1f
-        ) { it.date }
+
     )
 
     TableGrid(

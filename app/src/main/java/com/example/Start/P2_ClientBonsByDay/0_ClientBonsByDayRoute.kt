@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.Start.P2_ClientBonsByDay.Ui.DateDefiner
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
 import kotlinx.serialization.Serializable
 
 /**
@@ -31,11 +33,21 @@ fun ClientBonsByDayRoute(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Main screen content
-        ClientBonsByDayScreen(
-            uiState,
-            actions
-        )
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 80.dp)
+        ) {
+            DateDefiner(
+                Modifier,
+                uiState,
+                actions)
+            ClientBonsByDayScreen(
+                uiState,
+                actions
+            )
+        }
+        
 
         // FAB and Dialog container
         Column(

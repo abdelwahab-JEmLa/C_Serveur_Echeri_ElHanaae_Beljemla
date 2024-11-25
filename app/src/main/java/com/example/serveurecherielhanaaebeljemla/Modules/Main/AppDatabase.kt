@@ -4,9 +4,9 @@ package com.example.serveurecherielhanaaebeljemla.Modules.Main
 import a_RoomDB.*
 import android.content.Context
 import androidx.room.*
-import com.example.Start.P2_ClientBonsByDay.BuyBonModel
-import com.example.Start.P2_ClientBonsByDay.DaySoldBonsModel
-import com.example.Start.P2_ClientBonsByDay.DaySoldStatistics
+import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
+import com.example.serveurecherielhanaaebeljemla.Models.DaySoldStatistics
 import com.example.serveurecherielhanaaebeljemla.Models.AppSettingsSaverModel
 import com.example.serveurecherielhanaaebeljemla.Models.Res.DevicesTypeManager
 import dagger.Module
@@ -18,6 +18,15 @@ import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// DateConverter.kt
+class DateConverter {
+    @TypeConverter
+    fun toDate(timestamp: Long?): Date? = timestamp?.let { Date(it) }
+    @TypeConverter
+    fun fromDate(date: Date?): Long? = date?.time
+
+}
+
 @Database(
     entities = [
         ArticlesBasesStatsTable::class,
@@ -25,11 +34,11 @@ import javax.inject.Singleton
         ColorsArticlesTabelle::class,
         SoldArticlesTabelle::class,
         ClientsModel::class,
-        AppSettingsSaverModel::class,
         DevicesTypeManager::class,
         DaySoldBonsModel::class  ,
         DaySoldStatistics::class,
-        BuyBonModel::class  // Added BuyBonModel to entities
+        BuyBonModel::class,
+        AppSettingsSaverModel::class,
 
     ],
     version = 1,
@@ -52,15 +61,6 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "app_database"
     }
-}
-
-// DateConverter.kt
-class DateConverter {
-    @TypeConverter
-    fun toDate(timestamp: Long?): Date? = timestamp?.let { Date(it) }
-
-    @TypeConverter
-    fun fromDate(date: Date?): Long? = date?.time
 }
 
 @Module
