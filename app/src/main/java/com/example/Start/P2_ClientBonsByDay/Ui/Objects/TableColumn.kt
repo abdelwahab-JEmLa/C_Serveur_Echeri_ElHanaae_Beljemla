@@ -1,4 +1,4 @@
-package com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel
+package com.example.Start.P2_ClientBonsByDay.Ui.Objects
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

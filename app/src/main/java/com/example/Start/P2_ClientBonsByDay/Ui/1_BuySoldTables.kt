@@ -8,8 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableColumn
-import com.example.Start.P2_ClientBonsByDay.Ui.U1_ClientTabel.TableGrid
+import com.example.Start.P2_ClientBonsByDay.Ui.Objects.TableColumn
+import com.example.Start.P2_ClientBonsByDay.Ui.Objects.TableGrid
 import com.example.serveurecherielhanaaebeljemla.Models.BuyBonModel
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsModel
 

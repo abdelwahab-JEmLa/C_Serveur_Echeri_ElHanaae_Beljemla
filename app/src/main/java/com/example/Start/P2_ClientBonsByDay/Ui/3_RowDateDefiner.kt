@@ -55,7 +55,7 @@ private val arabicDayNames = mapOf(
 )
 
 @Composable
-fun DateDefiner(
+fun RowDateDefiner(
     modifier: Modifier = Modifier,
     uiState: DaySoldBonsScreen,
     actions: ClientBonsByDayActions
@@ -275,7 +275,7 @@ private fun DateSelectionDialog(
     }
 }
 
-@Preview(name = "DateDefiner")
+@Preview(name = "RowDateDefiner")
 @Composable
 private fun PreviewDateDefiner() {
     MaterialTheme {
@@ -290,7 +290,7 @@ private fun PreviewDateDefiner() {
         )
         val previewActions = ClientBonsByDayActions()
 
-        DateDefiner(
+        RowDateDefiner(
             uiState = previewState,
             actions = previewActions
         )

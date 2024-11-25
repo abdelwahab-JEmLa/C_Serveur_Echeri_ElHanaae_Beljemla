@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.Start.P2_ClientBonsByDay.Ui.BuyBonTable
 import com.example.Start.P2_ClientBonsByDay.Ui.ClientTable
-import com.example.Start.P2_ClientBonsByDay.Ui.DateDefiner
+import com.example.Start.P2_ClientBonsByDay.Ui.RowDateDefiner
 import com.example.Start.P2_ClientBonsByDay.Ui.DaySoldStatisticsTabele
 import com.example.serveurecherielhanaaebeljemla.Models.DaySoldBonsScreen
 import java.time.LocalDate
@@ -27,6 +27,15 @@ fun ClientBonsByDayScreen(
     state: DaySoldBonsScreen,
     actions: ClientBonsByDayActions
 ) {
+    // Get the display statistics date from app settings
+    val statisticsDate by remember(state.appSettingsSaverModel) {
+        mutableStateOf(
+            state.appSettingsSaverModel
+                .firstOrNull()
+                ?.displayStatisticsDate
+                ?: LocalDate.now().toString()
+        )
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -35,7 +44,7 @@ fun ClientBonsByDayScreen(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 80.dp)
         ) {
-            DateDefiner(
+            RowDateDefiner(
                 Modifier,
                 state,
                 actions)
@@ -46,17 +55,6 @@ fun ClientBonsByDayScreen(
             ) {
                 // Statistics Card
                 item {
-                    // Get the display statistics date from app settings
-                    val statisticsDate by remember(state.appSettingsSaverModel) {
-                        mutableStateOf(
-                            state.appSettingsSaverModel
-                                .firstOrNull()
-                                ?.displayStatisticsDate
-                                ?: LocalDate.now().toString()
-                        )
-                    }
-
-                    // Filter statistics based on selected date
                     DaySoldStatisticsTabele(
                         state = state,
                         dateStatistics = statisticsDate
@@ -69,12 +67,6 @@ fun ClientBonsByDayScreen(
 
                 // Client Table with filtering
                 item {
-                    val statisticsDate = state.appSettingsSaverModel
-                        .firstOrNull()
-                        ?.displayStatisticsDate
-                        ?: LocalDate.now().toString()
-
-                    // Filter client bons by date
                     val filteredClientBons = state.daySoldBonsModel.filter {
                         it.date == statisticsDate
                     }
