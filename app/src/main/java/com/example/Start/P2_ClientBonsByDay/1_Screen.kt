@@ -57,24 +57,44 @@ fun ClientBonsByDayScreen(
             Spacer(modifier = Modifier.height(4.dp))
         }
 
-        // Client Table
+        // Client Table with filtering
         item {
-            ClientTable(state)
+            val statisticsDate = state.appSettingsSaverModel
+                .firstOrNull()
+                ?.displayStatisticsDate
+                ?: LocalDate.now().toString()
+
+            // Filter client bons by date
+            val filteredClientBons = state.daySoldBonsModel.filter {
+                it.date == statisticsDate
+            }
+
+            ClientTable(filteredClientBons)
         }
 
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Buy Bon Table
+        // Buy Bon Table with filtering
         item {
-            BuyBonTable(state)
+            val statisticsDate = state.appSettingsSaverModel
+                .firstOrNull()
+                ?.displayStatisticsDate
+                ?: LocalDate.now().toString()
+
+            // Filter buy bons by date
+            val filteredBuyBons = state.buyBonModel.filter {
+                it.date == statisticsDate
+            }
+
+            BuyBonTable(filteredBuyBons)
         }
     }
 }
 
 @Composable
-private fun BuyBonTable(state: DaySoldBonsScreen) {
+private fun BuyBonTable(state: List<BuyBonModel>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -102,7 +122,7 @@ private fun BuyBonTable(state: DaySoldBonsScreen) {
         )
 
         TableGrid(
-            items = state.buyBonModel,
+            items = state,
             columns = columns
         )
     }
@@ -144,11 +164,23 @@ private fun DaySoldStatisticsTabele(
         )
 
         if (state.isEmpty()) {
-            Text(
-                text = "Aucune statistique disponible pour cette date",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            // Enhanced empty state handling
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = "Aucune statistique disponible pour cette date",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Les statistiques seront calculées automatiquement lors des nouvelles transactions",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         } else {
             TableGrid(
                 items = state,
@@ -157,9 +189,8 @@ private fun DaySoldStatisticsTabele(
         }
     }
 }
-
 @Composable
-private fun ClientTable(state: DaySoldBonsScreen) {
+private fun ClientTable(state: List<DaySoldBonsModel>) {
     val columns = listOf(
         TableColumn<DaySoldBonsModel>(
             title = "Client ID",
@@ -176,7 +207,7 @@ private fun ClientTable(state: DaySoldBonsScreen) {
     )
 
     TableGrid(
-        items = state.daySoldBonsModel,
+        items = state,
         columns = columns
     )
 }

@@ -101,6 +101,7 @@ class ClientBonsByDayViewModel @Inject constructor(
                         appSettingsSaverModel = listOf(updatedSettings)
                     )
                 }
+                updateDailyStatistics(_stateFlow.value.daySoldBonsModel,date)
             } catch (e: Exception) {
                 _stateFlow.update { it.copy(error = "Error updating statistics date: ${e.message}") }
             }
@@ -140,36 +141,52 @@ class ClientBonsByDayViewModel @Inject constructor(
     /**
      * Met à jour les statistiques quotidiennes
      */
-    private suspend fun updateDailyStatistics(daySoldBons: List<DaySoldBonsModel>) {
+
+    private suspend fun updateDailyStatistics(daySoldBons: List<DaySoldBonsModel>, selectedDate: String) {
         try {
             val today = LocalDate.now().format(dateFormatter)
 
-            // Calcul des totaux pour aujourd'hui
-            val todaysBons = daySoldBons.filter { it.date == today }
-            val totalInDay = todaysBons.sumOf { it.total }
-            val payedInDay = todaysBons.sumOf { it.payed }
+            val dateToUse = when {
+                selectedDate.isNotEmpty() -> selectedDate
+                else -> {
+                    val currentSettings = appSettingsSaverModelDao.getAll().firstOrNull()
+                    currentSettings?.displayStatisticsDate ?: today
+                }
+            }
 
-            // Création ou mise à jour des statistiques
+            // Calculate totals for the selected date
+            val selectedDateBons = daySoldBons.filter { it.date == dateToUse }
+            val totalInDay = selectedDateBons.sumOf { it.total }
+            val payedInDay = selectedDateBons.sumOf { it.payed }
+
+            // Create or update statistics for the selected date
             val statistics = DaySoldStatistics(
-                dayDate = today,
+                dayDate = dateToUse,
                 totalInDay = totalInDay,
                 payedInDay = payedInDay
             )
 
-            // Mise à jour base de données locale
-            val existingStats = daySoldStatisticsDao.getStatisticsByDate(today)
+            // Update local database
+            val existingStats = daySoldStatisticsDao.getStatisticsByDate(dateToUse)
             if (existingStats != null) {
                 statistics.vid = existingStats.vid
             }
             daySoldStatisticsDao.upsert(statistics)
 
-            // Mise à jour Firebase
-            refDaySoldStatistics.child(today).setValue(statistics)
+            // Update Firebase
+            refDaySoldStatistics.child(dateToUse).setValue(statistics)
+
+            // Update UI state to ensure statistics are shown
+            _stateFlow.update { currentState ->
+                currentState.copy(
+                    daySoldStatistics = listOf(statistics) +
+                            currentState.daySoldStatistics.filter { it.dayDate != dateToUse }
+                )
+            }
         } catch (e: Exception) {
             _stateFlow.update { it.copy(error = "Erreur mise à jour statistiques: ${e.message}") }
         }
     }
-
     /**
      * Configure l'écouteur Firebase
      */
@@ -199,7 +216,7 @@ class ClientBonsByDayViewModel @Inject constructor(
                 launch {
                     clientBonsByDayDao.getAllBonsFlow().collect { bons ->
                         // Mise à jour des statistiques
-                        updateDailyStatistics(bons)
+                        updateDailyStatistics(bons, "")
 
                         // Mise à jour de l'état
                         _stateFlow.update { currentState ->

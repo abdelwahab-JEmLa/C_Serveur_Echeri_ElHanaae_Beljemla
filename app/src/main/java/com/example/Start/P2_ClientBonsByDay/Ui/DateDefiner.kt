@@ -54,23 +54,31 @@ fun DateDefiner(
     uiState: DaySoldBonsScreen,
     actions: ClientBonsByDayActions
 ) {
-    // Initialize dates from uiState.appSettingsSaverModel
+    // Safely initialize dates with proper null handling
     var selectedDate by remember(uiState.appSettingsSaverModel) {
-        val savedDate = uiState.appSettingsSaverModel
-            .firstOrNull()
-            ?.dateForNewEntries
-            ?.let { LocalDate.parse(it) }
-            ?: LocalDate.now()
-        mutableStateOf(savedDate)
+        val savedDate = try {
+            uiState.appSettingsSaverModel
+                .firstOrNull()
+                ?.dateForNewEntries
+                ?.takeIf { it.isNotBlank() }
+                ?.let { LocalDate.parse(it) }
+        } catch (e: Exception) {
+            null
+        }
+        mutableStateOf(savedDate ?: LocalDate.now())
     }
 
     var selectedStatsDate by remember(uiState.appSettingsSaverModel) {
-        val savedStatsDate = uiState.appSettingsSaverModel
-            .firstOrNull()
-            ?.displayStatisticsDate
-            ?.let { LocalDate.parse(it) }
-            ?: LocalDate.now()
-        mutableStateOf(savedStatsDate)
+        val savedStatsDate = try {
+            uiState.appSettingsSaverModel
+                .firstOrNull()
+                ?.displayStatisticsDate
+                ?.takeIf { it.isNotBlank() }
+                ?.let { LocalDate.parse(it) }
+        } catch (e: Exception) {
+            null
+        }
+        mutableStateOf(savedStatsDate ?: LocalDate.now())
     }
 
     var showDateDialog by remember { mutableStateOf(false) }
@@ -176,7 +184,6 @@ fun DateDefiner(
         )
     }
 }
-
 
 
 @Composable
